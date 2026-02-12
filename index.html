@@ -3,13 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alice Ultimate ERP v8.5</title>
+    <title>Alice Ultimate ERP v8.6</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-    <style>
+
+    <style type="text/tailwindcss">
         body { @apply bg-stone-100 text-gray-700 font-sans; }
+        
         /* Estilos Base dos Novos Cards */
         .card { @apply bg-white p-5 rounded-3xl shadow-sm border border-stone-200; }
         .input-style { @apply w-full border border-stone-300 rounded-xl p-3 text-sm bg-stone-50 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all; }
@@ -46,6 +49,7 @@
                     <input type="password" id="login-password" placeholder="********" class="input-style">
                 </div>
                 <button onclick="handleLogin()" class="btn-primary mt-4">Entrar</button>
+                <p id="login-error" class="text-red-500 text-xs text-center hidden"></p>
             </div>
         </div>
     </div>
@@ -55,7 +59,7 @@
             <div class="max-w-7xl mx-auto flex justify-between items-center">
                 <div class="flex items-center gap-3">
                     <span class="text-3xl">👶</span>
-                    <h1 class="text-2xl font-bold text-emerald-800">Alice Ultimate ERP <span class="text-emerald-600 text-sm font-medium">v8.5</span></h1>
+                    <h1 class="text-2xl font-bold text-emerald-800">Alice Ultimate ERP <span class="text-emerald-600 text-sm font-medium">v8.6</span></h1>
                 </div>
                 <div class="flex gap-3 items-center">
                     <button onclick="toggleAvoMode()" id="avo-btn" class="px-4 py-1.5 rounded-full font-bold text-xs uppercase border-2 border-emerald-700 text-emerald-700 transition-all hover:bg-emerald-50">Avós: OFF</button>
@@ -66,11 +70,11 @@
                     </button>
                 </div>
             </div>
-            <div class="max-w-7xl mx-auto flex gap-2 mt-6 justify-center">
-                <button onclick="switchTab('estoque')" id="btn-estoque" class="tab-btn tab-active">📦 Estoque</button>
-                <button onclick="switchTab('saude')" id="btn-saude" class="tab-btn tab-inactive">🏥 Saúde</button>
-                <button onclick="switchTab('rotina')" id="btn-rotina" class="tab-btn tab-inactive">⏰ Rotina</button>
-                <button onclick="switchTab('wish')" id="btn-wish" class="tab-btn tab-inactive">✨ Wishlist</button>
+            <div class="max-w-7xl mx-auto flex gap-2 mt-6 justify-center overflow-x-auto pb-2">
+                <button onclick="switchTab('estoque')" id="btn-estoque" class="tab-btn tab-active whitespace-nowrap">📦 Estoque</button>
+                <button onclick="switchTab('saude')" id="btn-saude" class="tab-btn tab-inactive whitespace-nowrap">🏥 Saúde</button>
+                <button onclick="switchTab('rotina')" id="btn-rotina" class="tab-btn tab-inactive whitespace-nowrap">⏰ Rotina</button>
+                <button onclick="switchTab('wish')" id="btn-wish" class="tab-btn tab-inactive whitespace-nowrap">✨ Wishlist</button>
             </div>
         </header>
 
@@ -151,7 +155,7 @@
                     </div>
 
                     <div class="lg:col-span-3 space-y-6">
-                        <div class="flex justify-center gap-3">
+                        <div class="flex justify-center gap-3 flex-wrap">
                             <button onclick="setFilter('all')" id="filter-all" class="filter-btn filter-active">TUDO</button>
                             <button onclick="setFilter('fraldas')" id="filter-fraldas" class="filter-btn filter-inactive">FRALDAS</button>
                             <button onclick="setFilter('higiene')" id="filter-higiene" class="filter-btn filter-inactive">HIGIENE</button>
@@ -173,7 +177,7 @@
                         <input type="number" id="a-in" placeholder="Altura (Cm)" class="input-style">
                         <button onclick="addGrowth()" class="bg-emerald-700 text-white px-5 rounded-xl font-bold shadow-sm hover:bg-emerald-800 transition">+</button>
                     </div>
-                    <div id="growth-log" class="space-y-2 text-sm"></div>
+                    <div id="growth-log" class="space-y-2 text-sm max-h-60 overflow-y-auto"></div>
                 </div>
                 <div class="card">
                     <h2 class="font-bold text-lg text-emerald-800 mb-4">💊 Medicamentos</h2>
@@ -181,7 +185,7 @@
                         <input type="text" id="med-in" placeholder="Nome do medicamento" class="input-style">
                         <button onclick="addMed()" class="bg-emerald-700 text-white px-5 rounded-xl font-bold shadow-sm hover:bg-emerald-800 transition">+</button>
                     </div>
-                    <div id="med-log" class="space-y-2 text-sm"></div>
+                    <div id="med-log" class="space-y-2 text-sm max-h-60 overflow-y-auto"></div>
                 </div>
             </div>
 
@@ -195,7 +199,7 @@
                     <h2 class="font-bold text-lg text-emerald-800 mb-4">📖 Diário</h2>
                     <textarea id="diary-in" class="input-style h-32 mb-4 resize-none" placeholder="Escreva um momento especial..."></textarea>
                     <button onclick="addDiary()" class="btn-primary">Salvar Diário</button>
-                    <div id="diary-log" class="mt-6 space-y-4"></div>
+                    <div id="diary-log" class="mt-6 space-y-4 max-h-60 overflow-y-auto"></div>
                 </div>
             </div>
 
@@ -214,7 +218,7 @@
     </div>
 
     <script>
-        // CONFIGURAÇÃO DO FIREBASE
+        // CONFIGURAÇÃO DO FIREBASE (Chaves recuperadas da sua imagem)
         const firebaseConfig = {
             apiKey: "AIzaSyDxoVagw1NT72ywjK_svZeBt2beCowoZx8",
             authDomain: "alice-erp.firebaseapp.com",
@@ -253,7 +257,14 @@
         async function handleLogin() {
             const e = document.getElementById('login-email').value;
             const p = document.getElementById('login-password').value;
-            try { await auth.signInWithEmailAndPassword(e, p); } catch(err) { alert("Erro: " + err.message); }
+            const errEl = document.getElementById('login-error');
+            try { 
+                await auth.signInWithEmailAndPassword(e, p); 
+                errEl.classList.add('hidden');
+            } catch(err) { 
+                errEl.innerText = "Erro: " + err.message;
+                errEl.classList.remove('hidden');
+            }
         }
         function handleLogout() { auth.signOut(); }
 
@@ -268,19 +279,18 @@
             });
         }
 
-        // --- FUNÇÕES DE RENDERIZAÇÃO (Visual) ---
-
-        // Função auxiliar para criar o item da lista com o novo design
+        // --- FUNÇÕES DE RENDERIZAÇÃO ---
         function createListItem(name, quantity, gap, isHigiene = false) {
             const iconColor = gap > 0 ? 'border-red-400 bg-red-50 text-red-500' : 'border-emerald-400 bg-emerald-50 text-emerald-600';
             const textColor = isHigiene ? 'text-emerald-700' : 'text-gray-800';
             const statusText = gap > 0 ? `Faltam ${gap}` : 'Estoque Cheio';
+            const checkIcon = gap > 0 ? '!' : '✓';
 
             return `
             <li class="bg-white p-4 rounded-2xl border border-stone-200 shadow-sm flex items-center justify-between transition hover:border-emerald-300">
                 <div class="flex items-center gap-4">
-                    <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center ${iconColor}">
-                        ${gap > 0 ? '!' : '✓'}
+                    <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center font-bold ${iconColor}">
+                        ${checkIcon}
                     </div>
                     <div>
                         <p class="font-bold ${textColor}">${name}</p>
@@ -334,11 +344,11 @@
 
         function renderSaude(growth, meds) {
             const gl = document.getElementById('growth-log'); gl.innerHTML = '';
-            Object.values(growth).reverse().slice(0,5).forEach(g => {
+            Object.values(growth).reverse().slice(0,10).forEach(g => {
                 gl.innerHTML += `<div class="bg-white p-3 rounded-xl border border-stone-200 flex justify-between"><span>📅 ${g.date}</span><span><b>${g.p}kg</b> | <b>${g.a}cm</b></span></div>`;
             });
             const ml = document.getElementById('med-log'); ml.innerHTML = '';
-            Object.values(meds).reverse().slice(0,5).forEach(m => {
+            Object.values(meds).reverse().slice(0,10).forEach(m => {
                 ml.innerHTML += `<div class="bg-white p-3 rounded-xl border border-stone-200">💊 <b>${m.t}</b> <div class="text-xs text-gray-500 mt-1">${m.d}</div></div>`;
             });
         }
@@ -347,7 +357,7 @@
             const last = Object.values(feeds).pop();
             if(last) document.getElementById('last-feed-txt').innerText = `Última: Seio ${last.s} às ${last.d.split(', ')[1]}`;
             const dl = document.getElementById('diary-log'); dl.innerHTML = '';
-            Object.values(diary).reverse().slice(0,3).forEach(d => {
+            Object.values(diary).reverse().slice(0,5).forEach(d => {
                 dl.innerHTML += `<div class="bg-white p-4 rounded-2xl border-l-4 border-emerald-500 shadow-sm italic text-gray-600">"${d.t}" <div class="text-xs text-gray-400 mt-2 not-italic">${d.d}</div></div>`;
             });
         }
