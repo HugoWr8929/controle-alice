@@ -3,46 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alice Ultimate ERP 🍼</title>
+    <title>Alice Ultimate ERP 🍼 v7.5</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-    <script>tailwind.config = { darkMode: 'class' }</script>
     <style>
-        body { @apply bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-all; }
-        .card { @apply bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700; }
-        .input-style { @apply w-full border dark:border-gray-600 rounded-xl p-2 text-sm dark:bg-gray-700; }
+        body { @apply bg-gray-50 text-gray-800 transition-all; }
+        .card { @apply bg-white p-4 rounded-2xl shadow-sm border border-gray-100; }
+        .input-style { @apply w-full border border-gray-200 rounded-xl p-2 text-sm bg-white; }
         .tab-btn { @apply flex-1 py-2 rounded-lg font-bold text-xs transition-all text-center; }
         .tab-active { @apply bg-pink-500 text-white shadow-md; }
-        .tab-inactive { @apply bg-gray-200 dark:bg-gray-700 text-gray-500; }
+        .tab-inactive { @apply bg-gray-200 text-gray-500; }
+        .filter-btn { @apply px-3 py-1 rounded-full text-[10px] font-bold border transition-all; }
+        .filter-active { @apply bg-gray-800 text-white border-gray-800; }
+        .filter-inactive { @apply bg-white text-gray-400 border-gray-200; }
         .hidden { display: none !important; }
     </style>
 </head>
 <body class="pb-24">
 
     <div id="login-screen" class="fixed inset-0 z-[100] bg-pink-600 flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-2xl w-full max-w-md">
+        <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md">
             <div class="text-center mb-6">
                 <span class="text-5xl">👶</span>
                 <h2 class="text-2xl font-bold text-pink-600 mt-2">Alice ERP Login</h2>
             </div>
             <div class="space-y-4">
-                <input type="email" id="login-email" placeholder="E-mail" class="input-style border-gray-300">
-                <input type="password" id="login-password" placeholder="Senha" class="input-style border-gray-300">
-                <button onclick="handleLogin()" id="login-btn" class="w-full bg-pink-600 text-white py-3 rounded-xl font-bold hover:bg-pink-700 transition">Acessar Painel</button>
+                <input type="email" id="login-email" placeholder="E-mail" class="input-style">
+                <input type="password" id="login-password" placeholder="Senha" class="input-style">
+                <button onclick="handleLogin()" class="w-full bg-pink-600 text-white py-3 rounded-xl font-bold">Entrar</button>
                 <p id="login-error" class="text-red-500 text-xs text-center hidden"></p>
             </div>
         </div>
     </div>
 
     <div id="main-app" class="hidden">
-        <nav class="sticky top-0 z-50 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-b dark:border-gray-700 p-4">
+        <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b p-4">
             <div class="max-w-6xl mx-auto flex justify-between items-center">
                 <h1 class="text-xl font-bold text-pink-600">Alice Ultimate</h1>
                 <div class="flex gap-2 items-center">
                     <button onclick="toggleAvoMode()" id="avo-btn" class="text-[10px] bg-orange-100 text-orange-700 px-2 py-1 rounded font-bold uppercase">Avós: OFF</button>
-                    <button onclick="toggleDarkMode()" class="p-2 bg-gray-100 dark:bg-gray-800 rounded-full">🌓</button>
                     <button onclick="handleLogout()" class="text-xs text-gray-400 underline">Sair</button>
                 </div>
             </div>
@@ -50,7 +51,6 @@
                 <button onclick="switchTab('estoque')" id="btn-estoque" class="tab-btn tab-active">📦 Estoque</button>
                 <button onclick="switchTab('saude')" id="btn-saude" class="tab-btn tab-inactive">🏥 Saúde</button>
                 <button onclick="switchTab('rotina')" id="btn-rotina" class="tab-btn tab-inactive">⏰ Rotina</button>
-                <button onclick="switchTab('ajustes')" id="btn-ajustes" class="tab-btn tab-inactive">⚙️ Wishlist</button>
             </div>
         </nav>
 
@@ -59,11 +59,11 @@
             <div id="tab-estoque" class="tab-content space-y-4">
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
                     <div class="card bg-pink-500 text-white border-none text-center">
-                        <p class="text-[10px] uppercase opacity-80">Falta Comprar</p>
+                        <p class="text-[10px] uppercase opacity-80">Falta Investir</p>
                         <p id="future-cost" class="text-lg font-bold">R$ 0</p>
                     </div>
-                    <div class="card text-center">
-                        <p class="text-[10px] text-gray-400 uppercase">Média Trocas</p>
+                    <div class="card text-center border-l-4 border-l-blue-500">
+                        <p class="text-[10px] text-gray-400 uppercase">Média Real</p>
                         <p id="media-val" class="text-lg font-bold text-blue-500">--</p>
                     </div>
                     <div class="card text-center border-l-4 border-l-green-500">
@@ -76,13 +76,17 @@
                     </div>
                 </div>
 
-                <button onclick="registerUsage()" class="w-full bg-blue-600 text-white font-black py-8 rounded-3xl shadow-lg active:scale-95 transition text-2xl uppercase">
-                    Troquei a Alice! 🧷
-                </button>
+                <button onclick="registerUsage()" class="w-full bg-blue-600 text-white font-black py-8 rounded-3xl shadow-lg active:scale-95 transition text-2xl uppercase">Troquei a Alice! 🧷</button>
+
+                <div class="flex gap-2 justify-center mb-2">
+                    <button onclick="setFilter('all')" id="filter-all" class="filter-btn filter-active">TUDO</button>
+                    <button onclick="setFilter('fraldas')" id="filter-fraldas" class="filter-btn filter-inactive">FRALDAS</button>
+                    <button onclick="setFilter('higiene')" id="filter-higiene" class="filter-btn filter-inactive">HIGIENE</button>
+                </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="card">
-                        <h2 class="font-bold mb-4">📥 Lançar Compra</h2>
+                        <h2 class="font-bold mb-4 text-sm">📥 Lançar Compra</h2>
                         <div class="space-y-3">
                             <select id="cat-input" class="input-style" onchange="toggleSizeInput()">
                                 <option value="fralda">Fraldas</option>
@@ -90,6 +94,8 @@
                                 <option value="pomada">Pomadas</option>
                                 <option value="shampoo">Shampoo</option>
                                 <option value="sabonete_liq">Sabonete Líq.</option>
+                                <option value="sabonete_barra">Sabonete Barra</option>
+                                <option value="condicionador">Condicionador</option>
                             </select>
                             <div id="size-wrapper">
                                 <select id="size-input" class="input-style"><option>RN</option><option>P</option><option>M</option><option>G</option><option>XG</option></select>
@@ -99,72 +105,25 @@
                         </div>
                     </div>
                     <div class="card">
-                        <h2 class="font-bold mb-4">⚠️ Alertas de Estoque</h2>
-                        <div id="alerts-list" class="space-y-2"></div>
+                        <h2 class="font-bold mb-4 text-sm">⚠️ Alertas</h2>
+                        <div id="alerts-list" class="space-y-1"></div>
                     </div>
                 </div>
 
                 <div class="card overflow-x-auto">
-                    <table class="w-full text-xs"><tbody id="main-table"></tbody></table>
+                    <table class="w-full text-xs">
+                        <tbody id="main-table"></tbody>
+                    </table>
                 </div>
             </div>
-
-            <div id="tab-saude" class="tab-content hidden space-y-4">
-                <div class="card">
-                    <h2 class="font-bold mb-4">📏 Crescimento (Peso/Altura)</h2>
-                    <div class="flex gap-2 mb-4">
-                        <input type="number" step="0.1" id="p-in" placeholder="Kg" class="input-style">
-                        <input type="number" id="a-in" placeholder="Cm" class="input-style">
-                        <button onclick="addGrowth()" class="bg-blue-500 text-white px-4 rounded-xl">+</button>
-                    </div>
-                    <div id="growth-log" class="text-xs space-y-1"></div>
-                </div>
-                <div class="card">
-                    <h2 class="font-bold mb-4">💊 Medicamentos Aplicados</h2>
-                    <div class="flex gap-2">
-                        <input type="text" id="med-in" placeholder="Ex: Paracetamol" class="input-style">
-                        <button onclick="addMed()" class="bg-purple-500 text-white px-4 rounded-xl">+</button>
-                    </div>
-                    <div id="med-log" class="mt-4 text-[10px] space-y-1"></div>
-                </div>
-            </div>
-
-            <div id="tab-rotina" class="tab-content hidden space-y-4">
-                <div class="grid grid-cols-2 gap-4">
-                    <button onclick="regFeed('Esq')" class="card bg-pink-50 dark:bg-pink-900/20 text-pink-600 font-bold py-6">🤱 ESQUERDO</button>
-                    <button onclick="regFeed('Dir')" class="card bg-blue-50 dark:bg-blue-900/20 text-blue-600 font-bold py-6">🤱 DIREITO</button>
-                </div>
-                <p id="last-feed-txt" class="text-center text-xs italic text-gray-400">Última mamada: --</p>
-                
-                <div class="card text-center">
-                    <button id="nap-btn" onclick="toggleNap()" class="w-full bg-indigo-600 text-white py-6 rounded-2xl font-bold text-xl">Soneca: INICIAR</button>
-                </div>
-                
-                <div class="card">
-                    <h2 class="font-bold mb-2 italic">📖 Momentos Especiais</h2>
-                    <textarea id="diary-in" class="input-style h-20 mb-2" placeholder="O que ela fez de fofo hoje?"></textarea>
-                    <button onclick="addDiary()" class="w-full bg-pink-500 text-white py-2 rounded-xl font-bold">Salvar Diário</button>
-                    <div id="diary-log" class="mt-4 space-y-2"></div>
-                </div>
-            </div>
-
-            <div id="tab-ajustes" class="tab-content hidden space-y-4">
-                <div class="card">
-                    <h2 class="font-bold mb-4">✨ Lista de Desejos</h2>
-                    <div class="flex gap-2">
-                        <input type="text" id="wish-in" class="input-style" placeholder="Algo para comprar...">
-                        <button onclick="addWish()" class="bg-pink-500 text-white px-4 rounded-xl">+</button>
-                    </div>
-                    <div id="wish-log" class="mt-4 space-y-2"></div>
-                </div>
-                <button onclick="exportCSV()" class="w-full bg-green-600 text-white py-3 rounded-xl font-bold">Exportar para Excel (CSV)</button>
-            </div>
+            
+            <div id="tab-saude" class="tab-content hidden"> <div class="card">Consulte a aba de Estoque para lançar produtos.</div> </div>
+            <div id="tab-rotina" class="tab-content hidden"> <div class="card text-center"><button onclick="regFeed('E')" class="bg-pink-100 p-4 rounded-xl m-2">🤱 ESQ</button><button onclick="regFeed('D')" class="bg-blue-100 p-4 rounded-xl m-2">🤱 DIR</button></div> </div>
 
         </main>
     </div>
 
     <script>
-        // FIREBASE CONFIG
         const firebaseConfig = {
             apiKey: "AIzaSyDxoVagw1NT72ywjK_svZeBt2beCowoZx8",
             authDomain: "alice-erp.firebaseapp.com",
@@ -179,14 +138,15 @@
         const auth = firebase.auth();
         const db = firebase.database();
 
-        // REGRAS DE MERCADO
         const market = {
             fraldas: { 'RN': 200, 'P': 800, 'M': 1300, 'G': 1600, 'XG': 800 },
-            higiene: { 'lenco': 120, 'pomada': 24, 'shampoo': 10, 'sabonete_liq': 15 }
+            higiene: { 'lenco': 120, 'pomada': 24, 'shampoo': 10, 'sabonete_liq': 15, 'sabonete_barra': 20, 'condicionador': 6 }
         };
-        const prices = { fralda: 1.15, lenco: 12, pomada: 25, shampoo: 18, sabonete_liq: 24 };
+        const prices = { fralda: 1.15, lenco: 12, pomada: 25, shampoo: 18, sabonete_liq: 24, sabonete_barra: 5, condicionador: 20 };
+        const labels = { lenco: 'Lenços (pct)', pomada: 'Pomada (tubo)', shampoo: 'Shampoo', sabonete_liq: 'Sabonete Líq.', sabonete_barra: 'Sabonete Barra', condicionador: 'Condicionador' };
 
-        // AUTH MONITOR
+        let currentFilter = 'all';
+
         auth.onAuthStateChanged(user => {
             if(user) {
                 document.getElementById('login-screen').classList.add('hidden');
@@ -199,27 +159,27 @@
         });
 
         async function handleLogin() {
-            const email = document.getElementById('login-email').value;
-            const pass = document.getElementById('login-password').value;
-            try { await auth.signInWithEmailAndPassword(email, pass); } 
-            catch(e) { 
-                const err = document.getElementById('login-error');
-                err.innerText = "Erro: " + e.message;
-                err.classList.remove('hidden');
-            }
+            const e = document.getElementById('login-email').value;
+            const p = document.getElementById('login-password').value;
+            try { await auth.signInWithEmailAndPassword(e, p); } catch(err) { alert(err.message); }
         }
 
         function handleLogout() { auth.signOut(); }
 
-        // SYNC E RENDER
         function startSync() {
             db.ref().on('value', snap => {
                 const data = snap.val() || {};
                 renderEstoque(data.stock || {}, data.usageLogs || {});
-                renderSaude(data.growth || {}, data.meds || {});
-                renderRotina(data.feeds || {}, data.diary || {});
-                renderWishes(data.wishes || {});
             });
+        }
+
+        function setFilter(f) {
+            currentFilter = f;
+            document.querySelectorAll('.filter-btn').forEach(b => {
+                b.classList.replace('filter-active', 'filter-inactive');
+                if(b.id === 'filter-'+f) b.classList.replace('filter-inactive', 'filter-active');
+            });
+            db.ref().once('value', snap => renderEstoque(snap.val().stock || {}, snap.val().usageLogs || {}));
         }
 
         function renderEstoque(stock, logsObj) {
@@ -228,17 +188,34 @@
             let future = 0, current = 0, count = 0;
             table.innerHTML = ''; alerts.innerHTML = '';
             
-            // Fraldas
-            for(let s in market.fraldas) {
-                const has = stock[s] || 0;
-                const gap = Math.max(0, market.fraldas[s] - has);
-                future += gap * prices.fralda;
-                current += has * prices.fralda;
-                count += has;
-                table.innerHTML += `<tr class="border-b dark:border-gray-700"><td class="py-3 font-bold text-pink-500">${s}</td><td>${has} un</td><td class="text-right text-gray-400">Faltam ${gap}</td></tr>`;
-                if(has > 0 && has < 50) alerts.innerHTML += `<div class="p-2 bg-red-100 text-red-700 rounded-lg text-[10px] font-bold">🔴 Fralda ${s} em estado crítico!</div>`;
+            // LÓGICA FRALDAS
+            if(currentFilter === 'all' || currentFilter === 'fraldas') {
+                for(let s in market.fraldas) {
+                    const has = stock[s] || 0;
+                    const gap = Math.max(0, market.fraldas[s] - has);
+                    future += gap * prices.fralda;
+                    current += has * prices.fralda;
+                    count += has;
+                    table.innerHTML += `<tr class="border-b"><td class="py-3 font-bold text-pink-500">Fralda ${s}</td><td>${has} un</td><td class="text-right text-gray-400">Faltam ${gap}</td></tr>`;
+                    if(has > 0 && has < 50) alerts.innerHTML += `<div class="p-1 bg-red-50 text-red-600 rounded text-[10px] font-bold">⚠️ Fralda ${s} acabando!</div>`;
+                }
             }
 
+            // LÓGICA HIGIENE
+            if(currentFilter === 'all' || currentFilter === 'higiene') {
+                for(let item in market.higiene) {
+                    const has = stock[item] || 0;
+                    const target = market.higiene[item];
+                    const gap = Math.max(0, target - has);
+                    const p = prices[item] || 0;
+                    future += gap * p;
+                    current += has * p;
+                    count += has;
+                    table.innerHTML += `<tr class="border-b bg-gray-50/30"><td class="py-3 font-bold text-blue-500">${labels[item] || item}</td><td>${has} un</td><td class="text-right text-gray-400">R$ ${(gap*p).toFixed(0)}</td></tr>`;
+                }
+            }
+
+            // DASHBOARD
             const logs = Object.values(logsObj);
             if(logs.length > 1) {
                 const d = Math.max(1, (new Date(logs[logs.length-1]) - new Date(logs[0]))/86400000);
@@ -249,36 +226,7 @@
             document.getElementById('total-count').innerText = count;
         }
 
-        function renderSaude(growth, meds) {
-            const gLog = document.getElementById('growth-log'); gLog.innerHTML = '';
-            Object.values(growth).reverse().slice(0,5).forEach(g => {
-                gLog.innerHTML += `<div class="p-2 bg-gray-50 dark:bg-gray-700 rounded"><b>${g.date}:</b> ${g.p}kg / ${g.a}cm</div>`;
-            });
-            const mLog = document.getElementById('med-log'); mLog.innerHTML = '';
-            Object.values(meds).reverse().slice(0,5).forEach(m => {
-                mLog.innerHTML += `<div class="p-1 border-b dark:border-gray-700">💊 ${m.t} - <span class="text-gray-400">${m.d}</span></div>`;
-            });
-        }
-
-        function renderRotina(feeds, diary) {
-            const last = Object.values(feeds).pop();
-            if(last) document.getElementById('last-feed-txt').innerText = `Última: ${last.s} às ${last.d.split(', ')[1]}`;
-            const dLog = document.getElementById('diary-log'); dLog.innerHTML = '';
-            Object.values(diary).reverse().slice(0,3).forEach(d => {
-                dLog.innerHTML += `<div class="p-3 bg-pink-50 dark:bg-pink-900/20 rounded-xl text-xs border-l-4 border-pink-400">"${d.t}"</div>`;
-            });
-        }
-
-        function renderWishes(wishes) {
-            const wLog = document.getElementById('wish-log'); wLog.innerHTML = '';
-            Object.entries(wishes).forEach(([k, v]) => {
-                wLog.innerHTML += `<div class="flex justify-between items-center text-sm p-2 bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-xl"><span>${v.t}</span><button onclick="delWish('${k}')" class="text-red-500">✕</button></div>`;
-            });
-        }
-
-        // ESCRITA FIREBASE
         function registerUsage() { db.ref('usageLogs').push().set(new Date().toISOString()); }
-        
         function addItem() {
             const cat = document.getElementById('cat-input').value;
             const key = cat === 'fralda' ? document.getElementById('size-input').value : cat;
@@ -286,35 +234,6 @@
             db.ref('stock/'+key).transaction(c => (c||0) + qty);
             document.getElementById('qty-input').value = '';
         }
-
-        function addGrowth() {
-            const p = document.getElementById('p-in').value;
-            const a = document.getElementById('a-in').value;
-            if(p && a) db.ref('growth').push().set({p, a, date: new Date().toLocaleDateString()});
-        }
-
-        function addMed() {
-            const t = document.getElementById('med-in').value;
-            if(t) db.ref('meds').push().set({t, d: new Date().toLocaleString()});
-            document.getElementById('med-in').value = '';
-        }
-
-        function regFeed(s) { db.ref('feeds').push().set({s, d: new Date().toLocaleString()}); }
-
-        function addDiary() {
-            const t = document.getElementById('diary-in').value;
-            if(t) db.ref('diary').push().set({t, d: new Date().toLocaleDateString()});
-            document.getElementById('diary-in').value = '';
-        }
-
-        function addWish() {
-            const t = document.getElementById('wish-in').value;
-            if(t) db.ref('wishes').push().set({t});
-            document.getElementById('wish-in').value = '';
-        }
-        function delWish(k) { db.ref('wishes/'+k).remove(); }
-
-        // UI HELPERS
         function switchTab(t) {
             document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
             document.getElementById('tab-'+t).classList.remove('hidden');
@@ -323,34 +242,8 @@
                 if(b.id === 'btn-'+t) b.classList.replace('tab-inactive', 'tab-active');
             });
         }
-
         function toggleSizeInput() { document.getElementById('size-wrapper').classList.toggle('hidden', document.getElementById('cat-input').value !== 'fralda'); }
-        function toggleDarkMode() { document.documentElement.classList.toggle('dark'); }
-        function toggleAvoMode() {
-            const is = document.body.classList.toggle('text-xl');
-            document.getElementById('avo-btn').innerText = is ? "Avós: ON" : "Avós: OFF";
-        }
-        
-        let nap = false;
-        function toggleNap() {
-            nap = !nap;
-            const b = document.getElementById('nap-btn');
-            b.innerText = nap ? "Soneca: EM CURSO 😴" : "Soneca: INICIAR";
-            b.classList.toggle('bg-orange-500');
-        }
-
-        function exportCSV() {
-            db.ref().once('value', snap => {
-                const d = snap.val() || {};
-                let csv = "Item,Qtd\n";
-                for(let k in d.stock) csv += `${k},${d.stock[k]}\n`;
-                const blob = new Blob(["\ufeff"+csv], {type:'text/csv'});
-                const a = document.createElement('a');
-                a.href = URL.createObjectURL(blob);
-                a.download = 'estoque_alice.csv';
-                a.click();
-            });
-        }
+        function toggleAvoMode() { document.body.classList.toggle('text-xl'); }
     </script>
 </body>
 </html>
