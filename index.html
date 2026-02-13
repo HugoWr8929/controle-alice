@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Alice ERP v15.1 DEBUG</title>
+    <title>Mundo Alice</title>
     <script src="https://cdn.tailwindcss.com"></script>
     
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
@@ -18,44 +18,45 @@
         .card { @apply bg-white p-5 rounded-3xl shadow-sm border border-stone-200; }
         .input-style { @apply w-full border border-stone-300 rounded-xl p-3 text-sm bg-stone-50 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all; }
         .label-style { @apply block text-xs font-bold text-emerald-800 uppercase tracking-wide mb-1; }
+        
+        /* SIDEBAR */
         .sidebar { @apply fixed inset-y-0 left-0 w-72 bg-emerald-900 text-white transform -translate-x-full transition-transform duration-300 ease-in-out z-50 shadow-2xl flex flex-col; }
         .sidebar.open { @apply translate-x-0; }
         .overlay { @apply fixed inset-0 bg-black/50 z-40 hidden opacity-0 transition-opacity duration-300 backdrop-blur-sm; }
         .overlay.open { @apply block opacity-100; }
         .menu-item { @apply flex items-center gap-3 px-6 py-4 hover:bg-emerald-800 transition cursor-pointer border-b border-emerald-800/30 text-emerald-100; }
         .menu-item.active { @apply bg-emerald-800 text-white border-l-4 border-l-stone-100 font-bold; }
+
+        /* MODAL */
         .modal-bg { @apply fixed inset-0 bg-black/60 z-[60] hidden flex items-center justify-center p-4 backdrop-blur-sm opacity-0 transition-opacity duration-300; }
         .modal-bg.open { @apply block opacity-100; }
         .modal-box { @apply bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl transform scale-95 transition-transform; }
         .modal-bg.open .modal-box { @apply scale-100; }
+
+        /* BOTOES */
         .filter-btn { @apply px-3 py-1 rounded-full text-[10px] font-bold uppercase transition-all whitespace-nowrap; }
         .filter-active { @apply bg-emerald-800 text-white; }
         .filter-inactive { @apply bg-stone-200 text-gray-500 hover:bg-stone-300; }
         .btn-primary { @apply w-full bg-emerald-700 text-white py-3 rounded-xl font-bold hover:bg-emerald-800 transition-all shadow-sm active:scale-95; }
         .btn-big { @apply w-full bg-emerald-700 text-white font-black py-4 rounded-2xl shadow-md hover:bg-emerald-800 transition-all active:scale-95 text-lg uppercase; }
         .btn-size-select { @apply bg-stone-100 hover:bg-emerald-100 hover:text-emerald-700 hover:border-emerald-300 border-2 border-transparent text-gray-600 font-bold py-3 rounded-xl transition; }
+        
         .hidden { display: none !important; }
         .list-item-row { @apply flex justify-between items-center bg-stone-50 p-3 rounded-xl border border-stone-200 text-sm mb-2; }
         .btn-delete { @apply text-red-400 hover:text-red-600 font-bold px-2 py-1 rounded hover:bg-red-50 transition; }
-        
-        /* DEBUG BOX */
-        #debug-console { @apply mt-4 p-4 bg-black text-green-400 text-xs font-mono rounded-xl w-full h-40 overflow-y-auto border-2 border-red-500 hidden; }
     </style>
 </head>
 <body class="min-h-screen pb-10">
 
-    <div id="login-screen" class="fixed inset-0 z-[100] bg-stone-100 flex items-center justify-center p-6 overflow-y-auto">
-        <div class="bg-white p-10 rounded-[40px] shadow-xl w-full max-w-md text-center border border-stone-200 mt-10">
+    <div id="login-screen" class="fixed inset-0 z-[100] bg-stone-100 flex items-center justify-center p-6">
+        <div class="bg-white p-10 rounded-[40px] shadow-xl w-full max-w-md text-center border border-stone-200">
             <span class="text-6xl">👶</span>
-            <h2 class="text-3xl font-bold text-emerald-800 mt-4 mb-2">Alice ERP Login</h2>
-            <p class="text-xs text-gray-400 mb-6">Modo Diagnóstico Ativado</p>
+            <h2 class="text-3xl font-bold text-emerald-800 mt-4 mb-8">Mundo Alice</h2>
             <div class="space-y-5 text-left">
                 <div><label class="label-style">Email</label><input type="email" id="login-email" class="input-style"></div>
                 <div><label class="label-style">Senha</label><input type="password" id="login-password" class="input-style"></div>
                 <button onclick="handleLogin()" class="btn-primary mt-4">Entrar</button>
-                <p id="login-status" class="text-center text-sm mt-2 text-blue-500 font-bold"></p>
-                
-                <div id="debug-console">Console de Erros:</div>
+                <p id="login-error" class="text-red-500 text-xs text-center hidden"></p>
             </div>
         </div>
     </div>
@@ -77,6 +78,7 @@
     </div>
 
     <div id="main-app" class="hidden">
+        
         <div id="overlay" class="overlay" onclick="toggleMenu()"></div>
         <aside id="sidebar" class="sidebar">
             <div class="p-6 text-2xl font-bold border-b border-emerald-800 flex justify-between items-center bg-emerald-950">
@@ -101,7 +103,7 @@
                     <button onclick="toggleMenu()" class="p-2 -ml-2 text-emerald-800 rounded-lg hover:bg-stone-100 transition">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
                     </button>
-                    <div><h1 class="text-lg font-bold text-emerald-800 leading-tight">Alice ERP</h1><p class="text-[10px] text-gray-400 font-medium">Controle Total</p></div>
+                    <div><h1 class="text-lg font-bold text-emerald-800 leading-tight">Mundo Alice</h1><p class="text-[10px] text-gray-400 font-medium">Minha sorte disfarçada de pessoa!</p></div>
                 </div>
                 <div id="clock-display" class="text-right bg-stone-50 px-3 py-1 rounded-lg border border-stone-100">
                     <p class="text-[9px] text-gray-400 uppercase tracking-wider font-bold">Tempo</p><p id="timer-val" class="text-xs font-bold text-emerald-600 tabular-nums">--</p>
@@ -110,6 +112,7 @@
         </header>
 
         <main class="max-w-7xl mx-auto p-4 lg:p-6">
+            
             <div id="tab-estoque" class="tab-content">
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
                     <div class="card p-4 text-center"><p class="text-[10px] uppercase text-gray-400">Falta Comprar</p><p id="future-cost" class="text-xl font-bold text-gray-800">R$ 0</p></div>
@@ -197,9 +200,11 @@
                             </div>
                         </div>
                         <div class="card border-l-4 border-l-blue-500">
-                            <h2 class="text-lg font-bold text-blue-700 mb-4">📞 Contatos</h2>
+                            <h2 class="text-lg font-bold text-blue-700 mb-4">📞 Contatos & Endereço</h2>
                             <div class="space-y-4">
                                 <div><label class="label-style">Pediatra</label><input type="text" id="prof-pediatrician" class="input-style" placeholder="Dr. Nome - Tel" onblur="saveProfile()"></div>
+                                <div><label class="label-style">Mãe (Tel)</label><input type="text" id="prof-mom" class="input-style" placeholder="(11) 99999-9999" onblur="saveProfile()"></div>
+                                <div><label class="label-style">Pai (Tel)</label><input type="text" id="prof-dad" class="input-style" placeholder="(11) 99999-9999" onblur="saveProfile()"></div>
                                 <div><label class="label-style">Endereço</label><textarea id="prof-address" class="input-style h-24" placeholder="Rua, Número, Bairro" onblur="saveProfile()"></textarea></div>
                             </div>
                         </div>
@@ -217,37 +222,15 @@
                     </div>
                 </div>
             </div>
+
         </main>
     </div>
 
     <script>
-        // === LOGGER DE ERROS PARA DEBUG NA TELA ===
-        function logDebug(msg) {
-            const el = document.getElementById('debug-console');
-            if(el) {
-                el.classList.remove('hidden');
-                el.innerHTML += `> ${msg}<br>`;
-                el.scrollTop = el.scrollHeight;
-            }
-            console.log(msg);
-        }
-        window.onerror = function(message, source, lineno, colno, error) {
-            logDebug(`ERRO CRÍTICO: ${message} (Linha: ${lineno})`);
-        };
-
         // --- CONFIGURAÇÃO ---
-        const DATA_NASCIMENTO = new Date("2024-12-25T00:00:00"); 
-        // CHAVES DO USUÁRIO
+        const DATA_NASCIMENTO = new Date("2026-04-23T00:00:00"); 
         const firebaseConfig = { apiKey: "AIzaSyDxoVagw1NT72ywjK_svZeBt2beCowoZx8", authDomain: "alice-erp.firebaseapp.com", databaseURL: "https://alice-erp-default-rtdb.firebaseio.com", projectId: "alice-erp", storageBucket: "alice-erp.firebasestorage.app", messagingSenderId: "758898829901", appId: "1:758898829901:web:98125a74abcdf144930a04", measurementId: "G-64NHJVVMB6" };
-        
-        try {
-            firebase.initializeApp(firebaseConfig); 
-            const auth = firebase.auth(); 
-            const db = firebase.database();
-            logDebug("Firebase inicializado com sucesso.");
-        } catch (e) {
-            logDebug("FALHA AO INICIAR FIREBASE: " + e.message);
-        }
+        firebase.initializeApp(firebaseConfig); const auth = firebase.auth(); const db = firebase.database();
 
         const market = { fraldas: { 'RN': 200, 'P': 800, 'M': 1300, 'G': 1600, 'XG': 800, 'XXG': 500 }, higiene: { 'lenco': 120, 'pomada': 24, 'creme_assadura': 12, 'shampoo': 10, 'condicionador': 8, 'sabonete_liq': 15, 'sabao_barra': 20, 'oleo': 5, 'talco': 3 } };
         const prices = { fralda: 1.15, lenco: 12, pomada: 25, creme_assadura: 30, shampoo: 18, condicionador: 20, sabonete_liq: 24, sabao_barra: 5, oleo: 30, talco: 15 };
@@ -291,31 +274,12 @@
         }
 
         // --- AUTH ---
-        try {
-            firebase.auth().onAuthStateChanged(u=>{if(u){document.getElementById('login-screen').classList.add('hidden');document.getElementById('main-app').classList.remove('hidden');startSync();}else{document.getElementById('login-screen').classList.remove('hidden');document.getElementById('main-app').classList.add('hidden');}});
-        } catch(e) { logDebug("Erro no AuthListener: " + e.message); }
-
-        async function handleLogin(){
-            const btn = document.querySelector('button[onclick="handleLogin()"]');
-            const status = document.getElementById('login-status');
-            btn.innerText = "Conectando...";
-            status.innerText = "Tentando autenticar...";
-            
-            try{
-                await firebase.auth().signInWithEmailAndPassword(document.getElementById('login-email').value,document.getElementById('login-password').value);
-                status.innerText = "Sucesso!";
-            }catch(e){
-                btn.innerText = "Entrar";
-                status.innerText = "";
-                document.getElementById('login-error').innerText=e.message + " (" + e.code + ")";
-                document.getElementById('login-error').classList.remove('hidden');
-                logDebug("ERRO LOGIN: " + e.code + " - " + e.message);
-            }
-        }
-        function handleLogout(){firebase.auth().signOut();}
+        auth.onAuthStateChanged(u=>{if(u){document.getElementById('login-screen').classList.add('hidden');document.getElementById('main-app').classList.remove('hidden');startSync();}else{document.getElementById('login-screen').classList.remove('hidden');document.getElementById('main-app').classList.add('hidden');}});
+        async function handleLogin(){try{await auth.signInWithEmailAndPassword(document.getElementById('login-email').value,document.getElementById('login-password').value);}catch(e){document.getElementById('login-error').innerText=e.message;document.getElementById('login-error').classList.remove('hidden');}}
+        function handleLogout(){auth.signOut();}
 
         function startSync() {
-            firebase.database().ref().on('value', snap => {
+            db.ref().on('value', snap => {
                 const data = snap.val() || {}; lastDataSnapshot = data;
                 renderEstoque(data.stock||{}, data.usageLogs||{}); renderSaude(data.growth||{}, data.meds||{});
                 renderRotina(data.feeds||{}, data.diary||{}, data.naps||{}, data.napStatus||{});
@@ -330,7 +294,33 @@
         function isRecent(i){if(showAllHistory)return true;if(!i)return false;const d=new Date(i),a=new Date();a.setDate(a.getDate()-7);return d>=a;}
         function renderRotina(feeds,diary,naps,napStatus){const fl=document.getElementById('feed-log');fl.innerHTML='';Object.entries(feeds).reverse().filter(([k,v])=>isRecent(v.d)).forEach(([k,v])=>{fl.innerHTML+=`<div class="list-item-row"><span class="text-gray-600">🤱 <b>${v.s}</b> - ${fmtDate(v.d)}</span><button onclick="firebase.database().ref('feeds/${k}').remove()" class="btn-delete">✕</button></div>`});const nl=document.getElementById('nap-log');nl.innerHTML='';Object.entries(naps).reverse().filter(([k,v])=>isRecent(v.start)).forEach(([k,v])=>{nl.innerHTML+=`<div class="list-item-row"><span class="text-gray-600">😴 <b>${v.duration}min</b> - ${fmtDate(v.start)}</span><button onclick="firebase.database().ref('naps/${k}').remove()" class="btn-delete">✕</button></div>`});const nb=document.getElementById('nap-toggle-btn'),nt=document.getElementById('nap-status-text');if(napStatus&&napStatus.sleeping){const m=Math.round((new Date()-new Date(napStatus.start))/60000);nb.innerText="☀️ ACORDOU";nb.className="w-full bg-orange-500 text-white font-bold py-3 rounded-xl shadow";nt.innerText=`Dormindo há ${m} min`;}else{nb.innerText="🌙 INICIAR";nb.className="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl shadow";nt.innerText="Acordada";}const dl=document.getElementById('diary-log');dl.innerHTML='';Object.entries(diary).reverse().filter(([k,v])=>isRecent(v.d)).forEach(([k,d])=>{dl.innerHTML+=`<div class="bg-white p-3 rounded-xl border-l-4 border-emerald-500 shadow-sm relative text-sm"><div class="italic text-gray-600 pr-6">"${d.t}"</div><div class="text-[10px] text-gray-400 mt-1 not-italic">${fmtDate(d.d)}</div><button onclick="firebase.database().ref('diary/${k}').remove()" class="absolute top-1 right-1 text-red-300 hover:text-red-500 font-bold px-2">✕</button></div>`});}
         function renderSaude(growth,meds){const gl=document.getElementById('growth-log');gl.innerHTML='';Object.entries(growth).reverse().filter(([k,v])=>isRecent(v.date)).forEach(([k,g])=>{gl.innerHTML+=`<div class="list-item-row"><span>📅 ${fmtDate(g.date)} <b class="ml-2">${g.p}kg</b> | <b>${g.a}cm</b></span><button onclick="firebase.database().ref('growth/${k}').remove()" class="btn-delete">✕</button></div>`});const ml=document.getElementById('med-log');ml.innerHTML='';Object.entries(meds).reverse().filter(([k,v])=>isRecent(v.d)).forEach(([k,m])=>{ml.innerHTML+=`<div class="list-item-row"><span>💊 <b>${m.t}</b> - ${fmtDate(m.d)}</span><button onclick="firebase.database().ref('meds/${k}').remove()" class="btn-delete">✕</button></div>`});}
-        function renderEstoque(stock,logsObj){const l=document.getElementById('main-list');let f=0,c=0,cnt=0;l.innerHTML='';const createItem=(k,n,q,g,h)=>{const cl=g>0?'border-red-400 bg-red-50 text-red-500':'border-emerald-400 bg-emerald-50 text-emerald-600';return`<li class="bg-white p-3 rounded-2xl border border-stone-200 shadow-sm flex items-center justify-between"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full border-2 flex items-center justify-center font-bold ${cl}">${g>0?'!':'✓'}</div><div><p class="font-bold ${h?'text-emerald-700':'text-gray-800'}">${n}</p><p class="text-[10px] text-gray-500">${g>0?`Faltam ${g}`:'Ok'}</p></div></div><div class="flex items-center gap-2"><span class="font-bold text-gray-700">${q}<small class="text-gray-400 font-normal">un</small></span><button onclick="editItem('${k}',${q})" class="p-2 bg-stone-100 rounded text-gray-400 hover:text-emerald-600">✏️</button></div></li>`};if(currentFilter==='all'||currentFilter==='fraldas')for(let s in market.fraldas){const h=stock[s]||0,g=Math.max(0,market.fraldas[s]-h);f+=g*prices.fralda;c+=h*prices.fralda;cnt+=h;l.innerHTML+=createItem(s,`Fralda ${s}`,h,g,false)}if(currentFilter==='all'||currentFilter==='higiene')for(let i in market.higiene){const h=stock[i]||0,g=Math.max(0,market.higiene[i]-h);f+=g*(prices[i]||0);c+=h*(prices[i]||0);cnt+=h;l.innerHTML+=createItem(i,labels[i],h,g,true)}const logs=Object.values(logsObj);if(logs.length>1){const d=Math.max(1,(new Date(logs[logs.length-1])-new Date(logs[0]))/86400000);document.getElementById('media-val').innerText=(logs.length/d).toFixed(1)+'/d'}document.getElementById('future-cost').innerText='R$ '+f.toFixed(0);document.getElementById('stock-val').innerText='R$ '+c.toFixed(0);document.getElementById('total-count').innerText=cnt;}
+        
+        // CORREÇÃO DO CÁLCULO DE MÉDIA
+        function renderEstoque(stock,logsObj){
+            const l=document.getElementById('main-list');let f=0,c=0,cnt=0;l.innerHTML='';
+            const createItem=(k,n,q,g,h)=>{const cl=g>0?'border-red-400 bg-red-50 text-red-500':'border-emerald-400 bg-emerald-50 text-emerald-600';return`<li class="bg-white p-3 rounded-2xl border border-stone-200 shadow-sm flex items-center justify-between"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full border-2 flex items-center justify-center font-bold ${cl}">${g>0?'!':'✓'}</div><div><p class="font-bold ${h?'text-emerald-700':'text-gray-800'}">${n}</p><p class="text-[10px] text-gray-500">${g>0?`Faltam ${g}`:'Ok'}</p></div></div><div class="flex items-center gap-2"><span class="font-bold text-gray-700">${q}<small class="text-gray-400 font-normal">un</small></span><button onclick="editItem('${k}',${q})" class="p-2 bg-stone-100 rounded text-gray-400 hover:text-emerald-600">✏️</button></div></li>`};
+            if(currentFilter==='all'||currentFilter==='fraldas')for(let s in market.fraldas){const h=stock[s]||0,g=Math.max(0,market.fraldas[s]-h);f+=g*prices.fralda;c+=h*prices.fralda;cnt+=h;l.innerHTML+=createItem(s,`Fralda ${s}`,h,g,false)}
+            if(currentFilter==='all'||currentFilter==='higiene')for(let i in market.higiene){const h=stock[i]||0,g=Math.max(0,market.higiene[i]-h);f+=g*(prices[i]||0);c+=h*(prices[i]||0);cnt+=h;l.innerHTML+=createItem(i,labels[i],h,g,true)}
+            
+            // CÁLCULO CORRIGIDO DE MÉDIA DE USO
+            const logs = Object.values(logsObj).sort((a,b) => {
+                const dateA = a.date ? new Date(a.date) : new Date(a);
+                const dateB = b.date ? new Date(b.date) : new Date(b);
+                return dateA - dateB;
+            });
+
+            if(logs.length > 1){
+                const getD = (i) => i.date ? new Date(i.date) : new Date(i);
+                const diffMs = Math.abs(getD(logs[logs.length-1]) - getD(logs[0]));
+                const days = Math.max(1, diffMs / 86400000);
+                document.getElementById('media-val').innerText = (logs.length/days).toFixed(1)+'/d';
+            } else {
+                document.getElementById('media-val').innerText = '--';
+            }
+
+            document.getElementById('future-cost').innerText='R$ '+f.toFixed(0);document.getElementById('stock-val').innerText='R$ '+c.toFixed(0);document.getElementById('total-count').innerText=cnt;
+        }
+
         function renderWishes(w){const l=document.getElementById('wish-log');l.innerHTML='';Object.entries(w).forEach(([k,v])=>{l.innerHTML+=`<div class="list-item-row"><span class="font-medium text-gray-700">${v.t}</span><button onclick="firebase.database().ref('wishes/${k}').remove()" class="text-xs bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full font-bold">✓ Já Tenho</button></div>`})}
         function toggleNap(){firebase.database().ref('napStatus').once('value',s=>{const st=s.val();if(st&&st.sleeping){const end=new Date();const m=Math.round((end-new Date(st.start))/60000);firebase.database().ref('naps').push().set({start:st.start,end:end.toISOString(),duration:m});firebase.database().ref('napStatus').set({sleeping:false})}else{firebase.database().ref('napStatus').set({sleeping:true,start:new Date().toISOString()})}})}
         function editItem(k,q){let n=prompt(`Nova qtd:`,q);if(n!==null&&n.trim()!=="")firebase.database().ref('stock/'+k).set(parseInt(n))}
