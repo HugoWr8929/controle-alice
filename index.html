@@ -16,7 +16,7 @@
     <style type="text/tailwindcss">
         body { @apply bg-stone-100 text-gray-700 font-sans overflow-x-hidden; }
         .card { @apply bg-white p-5 rounded-3xl shadow-sm border border-stone-200; }
-        .input-style { @apply w-full border border-stone-300 rounded-xl p-3 text-sm bg-stone-50 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all; }
+        .input-style { @apply w-full border border-stone-300 rounded-xl p-3 text-sm bg-stone-50 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all disabled:bg-stone-200 disabled:text-stone-500 disabled:cursor-not-allowed; }
         .label-style { @apply block text-xs font-bold text-emerald-800 uppercase tracking-wide mb-1; }
         
         /* SIDEBAR */
@@ -37,13 +37,13 @@
         .filter-btn { @apply px-3 py-1 rounded-full text-[10px] font-bold uppercase transition-all whitespace-nowrap; }
         .filter-active { @apply bg-emerald-800 text-white; }
         .filter-inactive { @apply bg-stone-200 text-gray-500 hover:bg-stone-300; }
-        .btn-primary { @apply w-full bg-emerald-700 text-white py-3 rounded-xl font-bold hover:bg-emerald-800 transition-all shadow-sm active:scale-95; }
+        .btn-primary { @apply w-full bg-emerald-700 text-white py-3 rounded-xl font-bold hover:bg-emerald-800 transition-all shadow-sm active:scale-95 disabled:bg-gray-400 disabled:scale-100; }
         .btn-big { @apply w-full bg-emerald-700 text-white font-black py-4 rounded-2xl shadow-md hover:bg-emerald-800 transition-all active:scale-95 text-lg uppercase; }
         .btn-size-select { @apply bg-stone-100 hover:bg-emerald-100 hover:text-emerald-700 hover:border-emerald-300 border-2 border-transparent text-gray-600 font-bold py-3 rounded-xl transition; }
+        .btn-delete { @apply text-red-400 hover:text-red-600 font-bold px-2 py-1 rounded hover:bg-red-50 transition; }
         
         .hidden { display: none !important; }
         .list-item-row { @apply flex justify-between items-center bg-stone-50 p-3 rounded-xl border border-stone-200 text-sm mb-2; }
-        .btn-delete { @apply text-red-400 hover:text-red-600 font-bold px-2 py-1 rounded hover:bg-red-50 transition; }
     </style>
 </head>
 <body class="min-h-screen pb-10">
@@ -92,6 +92,7 @@
                 <div onclick="switchTab('profile')" class="menu-item" id="link-profile">🪪 Perfil & Documentos</div>
             </nav>
             <div class="p-6 border-t border-emerald-800 bg-emerald-950">
+                <p id="user-role-display" class="text-xs text-emerald-400 text-center mb-2">Visitante</p>
                 <button onclick="toggleAvoMode()" id="avo-btn" class="w-full mb-4 text-xs bg-emerald-800 py-3 rounded-lg text-center hover:bg-emerald-700 transition font-bold">Modo Avós: OFF</button>
                 <button onclick="handleLogout()" class="w-full text-xs text-emerald-300 hover:text-white underline">Sair do App</button>
             </div>
@@ -103,7 +104,7 @@
                     <button onclick="toggleMenu()" class="p-2 -ml-2 text-emerald-800 rounded-lg hover:bg-stone-100 transition">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
                     </button>
-                    <div><h1 class="text-lg font-bold text-emerald-800 leading-tight">Mundo Alice</h1><p class="text-[10px] text-gray-400 font-medium">Minha sorte disfarçada de pessoa!</p></div>
+                    <div><h1 class="text-lg font-bold text-emerald-800 leading-tight">Mundo Alice</h1><p class="text-[10px] text-gray-400 font-medium">Minha sorte disfarçada em pessoa!</p></div>
                 </div>
                 <div id="clock-display" class="text-right bg-stone-50 px-3 py-1 rounded-lg border border-stone-100">
                     <p class="text-[9px] text-gray-400 uppercase tracking-wider font-bold">Tempo</p><p id="timer-val" class="text-xs font-bold text-emerald-600 tabular-nums">--</p>
@@ -122,8 +123,8 @@
                 </div>
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
                     <div class="space-y-6">
-                        <div class="card bg-stone-50 border-stone-200">
-                            <h2 class="text-sm font-bold text-emerald-800 uppercase mb-4">🛒 Lançar Compra</h2>
+                        <div id="admin-stock-panel" class="card bg-stone-50 border-stone-200 hidden">
+                            <h2 class="text-sm font-bold text-emerald-800 uppercase mb-4">🛒 Lançar Compra (Admin)</h2>
                             <div class="space-y-3">
                                 <select id="cat-input" class="input-style" onchange="toggleSizeInput()"><option value="fralda">Fraldas</option><option value="lenco">Lenços</option><option value="pomada">Pomadas</option><option value="creme_assadura">Creme Assadura</option><option value="shampoo">Shampoo</option><option value="condicionador">Condicionador</option><option value="sabonete_liq">Sabonete Líq.</option><option value="sabao_barra">Sabão Barra</option><option value="oleo">Óleo</option><option value="talco">Talco</option></select>
                                 <div id="size-wrapper"><select id="size-input" class="input-style"><option>RN</option><option>P</option><option>M</option><option>G</option><option>XG</option><option>XXG</option></select></div>
@@ -147,7 +148,7 @@
             <div id="tab-saude" class="tab-content hidden grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div class="card">
                     <div class="flex justify-between items-center mb-4"><h2 class="font-bold text-lg text-emerald-800">📏 Crescimento</h2><button onclick="toggleHistory()" class="btn-toggle-hist" id="hist-btn-saude">📅 Ver Tudo</button></div>
-                    <div class="flex gap-2 mb-4"><input type="number" step="0.1" id="p-in" placeholder="Kg" class="input-style"><input type="number" id="a-in" placeholder="Cm" class="input-style"><button onclick="addGrowth()" class="bg-emerald-700 text-white px-4 rounded-xl font-bold shadow">+</button></div>
+                    <div id="admin-growth-inputs" class="flex gap-2 mb-4 hidden"><input type="number" step="0.1" id="p-in" placeholder="Kg" class="input-style"><input type="number" id="a-in" placeholder="Cm" class="input-style"><button onclick="addGrowth()" class="bg-emerald-700 text-white px-4 rounded-xl font-bold shadow">+</button></div>
                     <div id="growth-log" class="space-y-1 max-h-64 overflow-y-auto"></div>
                 </div>
                 <div class="card">
@@ -182,7 +183,7 @@
             <div id="tab-wish" class="tab-content hidden">
                 <div class="card max-w-3xl mx-auto">
                     <div class="flex justify-between items-center mb-6"><h2 class="font-bold text-lg text-emerald-800">✨ Desejos</h2><div class="flex gap-2"><button onclick="exportWishlistCSV()" class="text-[10px] bg-green-100 text-green-700 px-3 py-2 rounded-lg font-bold">CSV</button><button onclick="exportWishlistPDF()" class="text-[10px] bg-red-100 text-red-700 px-3 py-2 rounded-lg font-bold">PDF</button></div></div>
-                    <div class="flex gap-2 mb-6"><input type="text" id="wish-in" class="input-style" placeholder="Item..."><button onclick="addWish()" class="bg-emerald-700 text-white px-4 rounded-xl font-bold shadow">+</button></div>
+                    <div id="admin-wish-inputs" class="flex gap-2 mb-6 hidden"><input type="text" id="wish-in" class="input-style" placeholder="Item..."><button onclick="addWish()" class="bg-emerald-700 text-white px-4 rounded-xl font-bold shadow">+</button></div>
                     <div id="wish-log" class="space-y-2"></div>
                 </div>
             </div>
@@ -211,8 +212,8 @@
                     </div>
                     <div class="card border-l-4 border-l-stone-500">
                         <h2 class="text-lg font-bold text-stone-700 mb-4 flex justify-between">📂 Documentos Digitais<span class="text-xs font-normal text-gray-400 pt-1">Max: 1MB</span></h2>
-                        <div class="mb-4 bg-stone-50 p-4 rounded-xl border border-stone-200 border-dashed">
-                            <label class="label-style">Adicionar Foto</label>
+                        <div id="admin-docs-panel" class="mb-4 bg-stone-50 p-4 rounded-xl border border-stone-200 border-dashed hidden">
+                            <label class="label-style">Adicionar Foto (Admin)</label>
                             <input type="file" id="doc-upload" accept="image/*" class="w-full text-sm text-gray-500">
                             <input type="text" id="doc-name" placeholder="Nome (Ex: RG)" class="input-style mt-2">
                             <button onclick="uploadDoc()" class="btn-primary mt-2 text-sm py-2">Salvar</button>
@@ -227,7 +228,13 @@
     </div>
 
     <script>
-        // --- CONFIGURAÇÃO ---
+        // --- 1. CONFIGURAÇÃO DE USUÁRIOS ---
+        // ! IMPORTANTE: ADICIONE OS E-MAILS DOS PAIS AQUI !
+        const ADMINS = [
+            "hugoclemenc@paidaalice.com", 
+            "maria@maedaalice.com"
+        ];
+        
         const DATA_NASCIMENTO = new Date("2026-04-23T00:00:00"); 
         const firebaseConfig = { apiKey: "AIzaSyDxoVagw1NT72ywjK_svZeBt2beCowoZx8", authDomain: "alice-erp.firebaseapp.com", databaseURL: "https://alice-erp-default-rtdb.firebaseio.com", projectId: "alice-erp", storageBucket: "alice-erp.firebasestorage.app", messagingSenderId: "758898829901", appId: "1:758898829901:web:98125a74abcdf144930a04", measurementId: "G-64NHJVVMB6" };
         firebase.initializeApp(firebaseConfig); const auth = firebase.auth(); const db = firebase.database();
@@ -239,6 +246,7 @@
         let currentFilter = 'all';
         let showAllHistory = false;
         let lastDataSnapshot = {};
+        let isUserAdmin = false;
 
         // --- RELÓGIO ---
         function updateClock() {
@@ -248,33 +256,49 @@
         }
         setInterval(updateClock,1000); updateClock();
 
-        // --- UI ---
-        function toggleMenu(){const sb=document.getElementById('sidebar'), ov=document.getElementById('overlay'); sb.classList.toggle('open'); ov.classList.toggle('open');}
-        function switchTab(t){document.querySelectorAll('.tab-content').forEach(c=>c.classList.add('hidden')); document.getElementById('tab-'+t).classList.remove('hidden'); document.querySelectorAll('.menu-item').forEach(m=>m.classList.remove('active')); const l=document.getElementById('link-'+t); if(l)l.classList.add('active'); if(document.getElementById('sidebar').classList.contains('open')) toggleMenu();}
-        function toggleHistory(){showAllHistory=!showAllHistory; const txt=showAllHistory?"📅 Ver Menos (7 dias)":"📅 Ver Histórico Completo"; if(document.getElementById('hist-btn-saude'))document.getElementById('hist-btn-saude').innerText=txt; if(document.getElementById('hist-btn-rotina'))document.getElementById('hist-btn-rotina').innerText=txt; renderRotina(lastDataSnapshot.feeds||{}, lastDataSnapshot.diary||{}, lastDataSnapshot.naps||{}, lastDataSnapshot.napStatus||{}); renderSaude(lastDataSnapshot.growth||{}, lastDataSnapshot.meds||{});}
+        // --- AUTH & PERMISSÕES ---
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('main-app').classList.remove('hidden');
+                
+                isUserAdmin = ADMINS.includes(user.email.toLowerCase());
+                applyPermissions(isUserAdmin);
+                document.getElementById('user-role-display').innerText = isUserAdmin ? "Perfil: Admin (Pai/Mãe)" : "Perfil: Visitante";
+                
+                startSync();
+            } else {
+                document.getElementById('login-screen').classList.remove('hidden');
+                document.getElementById('main-app').classList.add('hidden');
+            }
+        });
 
-        // --- LÓGICA MODAL ---
-        function openDiaperModal(){ document.getElementById('diaper-modal').classList.add('open'); }
-        function closeDiaperModal(){ document.getElementById('diaper-modal').classList.remove('open'); }
-        function confirmDiaperUsage(size) {
-            firebase.database().ref('stock/' + size).transaction(c => (c || 0) > 0 ? c - 1 : 0);
-            firebase.database().ref('usageLogs').push().set({ date: new Date().toISOString(), type: `Troca Fralda (${size})` });
-            closeDiaperModal();
+        function applyPermissions(isAdmin) {
+            // Elementos visuais para esconder/mostrar
+            const adminElements = [
+                'admin-stock-panel',   // Compra Estoque
+                'admin-growth-inputs', // Crescimento
+                'admin-wish-inputs',   // Wishlist Adicionar
+                'admin-docs-panel'     // Docs Upload
+            ];
+            adminElements.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    if (isAdmin) el.classList.remove('hidden');
+                    else el.classList.add('hidden');
+                }
+            });
+
+            // Bloquear inputs do perfil se não for admin
+            const profileInputs = document.querySelectorAll('#tab-profile input, #tab-profile select, #tab-profile textarea');
+            profileInputs.forEach(input => {
+                // Não bloqueia o upload de arquivo aqui, pois ele já está dentro do panel escondido acima
+                if(!input.closest('#admin-docs-panel')) {
+                    input.disabled = !isAdmin;
+                }
+            });
         }
 
-        // --- DOCUMENTOS ---
-        function uploadDoc() {
-            const fi=document.getElementById('doc-upload'), ni=document.getElementById('doc-name'), f=fi.files[0];
-            if(!f)return alert("Selecione um arquivo!"); if(f.size>1024*1024)return alert("Máx 1MB!");
-            const r=new FileReader(); r.onload=function(e){ firebase.database().ref('documents').push().set({name:ni.value||"Doc", data:e.target.result, date:new Date().toISOString()}); fi.value=''; ni.value=''; }; r.readAsDataURL(f);
-        }
-        function renderDocs(docs) {
-            const l=document.getElementById('doc-list'); l.innerHTML=''; if(!docs){l.innerHTML='<p class="text-xs">Vazio.</p>';return;}
-            Object.entries(docs).reverse().forEach(([k,d])=>{ l.innerHTML+=`<div class="flex justify-between items-center bg-stone-50 p-3 rounded-xl border"><div class="flex gap-3"><span class="text-xl">📄</span><div><p class="text-sm font-bold">${d.name}</p><p class="text-[10px]">${new Date(d.date).toLocaleDateString()}</p></div></div><div class="flex gap-2"><button onclick="const w=window.open();w.document.write('<img src=\\'${d.data}\\' width=100%>');" class="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded">Ver</button><button onclick="firebase.database().ref('documents/${k}').remove()" class="text-red-400">✕</button></div></div>`; });
-        }
-
-        // --- AUTH ---
-        auth.onAuthStateChanged(u=>{if(u){document.getElementById('login-screen').classList.add('hidden');document.getElementById('main-app').classList.remove('hidden');startSync();}else{document.getElementById('login-screen').classList.remove('hidden');document.getElementById('main-app').classList.add('hidden');}});
         async function handleLogin(){try{await auth.signInWithEmailAndPassword(document.getElementById('login-email').value,document.getElementById('login-password').value);}catch(e){document.getElementById('login-error').innerText=e.message;document.getElementById('login-error').classList.remove('hidden');}}
         function handleLogout(){auth.signOut();}
 
@@ -287,41 +311,70 @@
             });
         }
 
+        // --- RENDERS ---
+        function renderSaude(growth, meds) {
+            const gl=document.getElementById('growth-log');gl.innerHTML='';
+            Object.entries(growth).reverse().filter(([k,v])=>isRecent(v.date)).forEach(([k,g])=>{
+                const delBtn = isUserAdmin ? `<button onclick="firebase.database().ref('growth/${k}').remove()" class="btn-delete">✕</button>` : '';
+                gl.innerHTML+=`<div class="list-item-row"><span>📅 ${fmtDate(g.date)} <b class="ml-2">${g.p}kg</b> | <b>${g.a}cm</b></span>${delBtn}</div>`
+            });
+            const ml=document.getElementById('med-log');ml.innerHTML='';
+            Object.entries(meds).reverse().filter(([k,v])=>isRecent(v.d)).forEach(([k,m])=>{
+                // Meds: Delete para TODOS
+                const delBtn = `<button onclick="firebase.database().ref('meds/${k}').remove()" class="btn-delete">✕</button>`;
+                ml.innerHTML+=`<div class="list-item-row"><span>💊 <b>${m.t}</b> - ${fmtDate(m.d)}</span>${delBtn}</div>`
+            });
+        }
+
+        function renderDocs(docs) {
+            const l=document.getElementById('doc-list'); l.innerHTML=''; if(!docs){l.innerHTML='<p class="text-xs">Vazio.</p>';return;}
+            Object.entries(docs).reverse().forEach(([k,d])=>{ 
+                const delBtn = isUserAdmin ? `<button onclick="firebase.database().ref('documents/${k}').remove()" class="text-red-400 hover:text-red-600 px-2 font-bold">✕</button>` : '';
+                l.innerHTML+=`<div class="flex justify-between items-center bg-stone-50 p-3 rounded-xl border"><div class="flex gap-3"><span class="text-xl">📄</span><div><p class="text-sm font-bold">${d.name}</p><p class="text-[10px]">${new Date(d.date).toLocaleDateString()}</p></div></div><div class="flex gap-2"><button onclick="const w=window.open();w.document.write('<img src=\\'${d.data}\\' width=100%>');" class="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded">Ver</button>${delBtn}</div></div>`; 
+            });
+        }
+
+        function renderEstoque(stock, logsObj) {
+            const l=document.getElementById('main-list');let f=0,c=0,cnt=0;l.innerHTML='';
+            const createItem=(k,n,q,g,h)=>{
+                const cl=g>0?'border-red-400 bg-red-50 text-red-500':'border-emerald-400 bg-emerald-50 text-emerald-600';
+                const editBtn = isUserAdmin ? `<button onclick="editItem('${k}',${q})" class="p-2 bg-stone-100 rounded text-gray-400 hover:text-emerald-600">✏️</button>` : '';
+                return`<li class="bg-white p-3 rounded-2xl border border-stone-200 shadow-sm flex items-center justify-between"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full border-2 flex items-center justify-center font-bold ${cl}">${g>0?'!':'✓'}</div><div><p class="font-bold ${h?'text-emerald-700':'text-gray-800'}">${n}</p><p class="text-[10px] text-gray-500">${g>0?`Faltam ${g}`:'Ok'}</p></div></div><div class="flex items-center gap-2"><span class="font-bold text-gray-700">${q}<small class="text-gray-400 font-normal">un</small></span>${editBtn}</div></li>`
+            };
+            if(currentFilter==='all'||currentFilter==='fraldas')for(let s in market.fraldas){const h=stock[s]||0,g=Math.max(0,market.fraldas[s]-h);f+=g*prices.fralda;c+=h*prices.fralda;cnt+=h;l.innerHTML+=createItem(s,`Fralda ${s}`,h,g,false)}
+            if(currentFilter==='all'||currentFilter==='higiene')for(let i in market.higiene){const h=stock[i]||0,g=Math.max(0,market.higiene[i]-h);f+=g*(prices[i]||0);c+=h*(prices[i]||0);cnt+=h;l.innerHTML+=createItem(i,labels[i],h,g,true)}
+            
+            const logs = Object.values(logsObj).sort((a,b) => { const dateA = a.date ? new Date(a.date) : new Date(a); const dateB = b.date ? new Date(b.date) : new Date(b); return dateA - dateB; });
+            if(logs.length > 1){ const getD = (i) => i.date ? new Date(i.date) : new Date(i); const diffMs = Math.abs(getD(logs[logs.length-1]) - getD(logs[0])); const days = Math.max(1, diffMs / 86400000); document.getElementById('media-val').innerText = (logs.length/days).toFixed(1)+'/d'; } else { document.getElementById('media-val').innerText = '--'; }
+            document.getElementById('future-cost').innerText='R$ '+f.toFixed(0);document.getElementById('stock-val').innerText='R$ '+c.toFixed(0);document.getElementById('total-count').innerText=cnt;
+        }
+
+        function renderWishes(w){
+            const l=document.getElementById('wish-log');l.innerHTML='';
+            Object.entries(w).forEach(([k,v])=>{
+                const delBtn = isUserAdmin ? `<button onclick="firebase.database().ref('wishes/${k}').remove()" class="text-xs bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full font-bold">✓ Já Tenho</button>` : '';
+                l.innerHTML+=`<div class="list-item-row"><span class="font-medium text-gray-700">${v.t}</span>${delBtn}</div>`
+            });
+        }
+
+        // --- UI ---
+        function toggleMenu(){const sb=document.getElementById('sidebar'), ov=document.getElementById('overlay'); sb.classList.toggle('open'); ov.classList.toggle('open');}
+        function switchTab(t){document.querySelectorAll('.tab-content').forEach(c=>c.classList.add('hidden')); document.getElementById('tab-'+t).classList.remove('hidden'); document.querySelectorAll('.menu-item').forEach(m=>m.classList.remove('active')); const l=document.getElementById('link-'+t); if(l)l.classList.add('active'); if(document.getElementById('sidebar').classList.contains('open')) toggleMenu();}
+        function toggleHistory(){showAllHistory=!showAllHistory; const txt=showAllHistory?"📅 Ver Menos (7 dias)":"📅 Ver Histórico Completo"; if(document.getElementById('hist-btn-saude'))document.getElementById('hist-btn-saude').innerText=txt; if(document.getElementById('hist-btn-rotina'))document.getElementById('hist-btn-rotina').innerText=txt; renderRotina(lastDataSnapshot.feeds||{}, lastDataSnapshot.diary||{}, lastDataSnapshot.naps||{}, lastDataSnapshot.napStatus||{}); renderSaude(lastDataSnapshot.growth||{}, lastDataSnapshot.meds||{});}
+        function openDiaperModal(){ document.getElementById('diaper-modal').classList.add('open'); }
+        function closeDiaperModal(){ document.getElementById('diaper-modal').classList.remove('open'); }
+        function confirmDiaperUsage(size) { firebase.database().ref('stock/' + size).transaction(c => (c || 0) > 0 ? c - 1 : 0); firebase.database().ref('usageLogs').push().set({ date: new Date().toISOString(), type: `Troca Fralda (${size})` }); closeDiaperModal(); }
+        function uploadDoc() { const fi=document.getElementById('doc-upload'), ni=document.getElementById('doc-name'), f=fi.files[0]; if(!f)return alert("Selecione um arquivo!"); if(f.size>1024*1024)return alert("Máx 1MB!"); const r=new FileReader(); r.onload=function(e){ firebase.database().ref('documents').push().set({name:ni.value||"Doc", data:e.target.result, date:new Date().toISOString()}); fi.value=''; ni.value=''; }; r.readAsDataURL(f); }
+        
         // --- DEMAIS ---
-        function saveProfile(){const p={blood:document.getElementById('prof-blood').value,allergy:document.getElementById('prof-allergy').value,insurance:document.getElementById('prof-insurance').value,hospital:document.getElementById('prof-hospital').value,pediatrician:document.getElementById('prof-pediatrician').value,mom:document.getElementById('prof-mom').value,dad:document.getElementById('prof-dad').value,address:document.getElementById('prof-address').value};firebase.database().ref('profile').set(p);}
+        function saveProfile(){
+            if(!isUserAdmin) return; // Segurança extra no front
+            const p={blood:document.getElementById('prof-blood').value,allergy:document.getElementById('prof-allergy').value,insurance:document.getElementById('prof-insurance').value,hospital:document.getElementById('prof-hospital').value,pediatrician:document.getElementById('prof-pediatrician').value,mom:document.getElementById('prof-mom').value,dad:document.getElementById('prof-dad').value,address:document.getElementById('prof-address').value};firebase.database().ref('profile').set(p);
+        }
         function renderProfile(p){if(!p)return;const f=(i,v)=>{const e=document.getElementById(i);if(e&&document.activeElement!==e)e.value=v||''};f('prof-blood',p.blood);f('prof-allergy',p.allergy);f('prof-insurance',p.insurance);f('prof-hospital',p.hospital);f('prof-pediatrician',p.pediatrician);f('prof-mom',p.mom);f('prof-dad',p.dad);f('prof-address',p.address);}
         function fmtDate(i){if(!i)return'';return new Date(i).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}).replace(',',' às');}
         function isRecent(i){if(showAllHistory)return true;if(!i)return false;const d=new Date(i),a=new Date();a.setDate(a.getDate()-7);return d>=a;}
         function renderRotina(feeds,diary,naps,napStatus){const fl=document.getElementById('feed-log');fl.innerHTML='';Object.entries(feeds).reverse().filter(([k,v])=>isRecent(v.d)).forEach(([k,v])=>{fl.innerHTML+=`<div class="list-item-row"><span class="text-gray-600">🤱 <b>${v.s}</b> - ${fmtDate(v.d)}</span><button onclick="firebase.database().ref('feeds/${k}').remove()" class="btn-delete">✕</button></div>`});const nl=document.getElementById('nap-log');nl.innerHTML='';Object.entries(naps).reverse().filter(([k,v])=>isRecent(v.start)).forEach(([k,v])=>{nl.innerHTML+=`<div class="list-item-row"><span class="text-gray-600">😴 <b>${v.duration}min</b> - ${fmtDate(v.start)}</span><button onclick="firebase.database().ref('naps/${k}').remove()" class="btn-delete">✕</button></div>`});const nb=document.getElementById('nap-toggle-btn'),nt=document.getElementById('nap-status-text');if(napStatus&&napStatus.sleeping){const m=Math.round((new Date()-new Date(napStatus.start))/60000);nb.innerText="☀️ ACORDOU";nb.className="w-full bg-orange-500 text-white font-bold py-3 rounded-xl shadow";nt.innerText=`Dormindo há ${m} min`;}else{nb.innerText="🌙 INICIAR";nb.className="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl shadow";nt.innerText="Acordada";}const dl=document.getElementById('diary-log');dl.innerHTML='';Object.entries(diary).reverse().filter(([k,v])=>isRecent(v.d)).forEach(([k,d])=>{dl.innerHTML+=`<div class="bg-white p-3 rounded-xl border-l-4 border-emerald-500 shadow-sm relative text-sm"><div class="italic text-gray-600 pr-6">"${d.t}"</div><div class="text-[10px] text-gray-400 mt-1 not-italic">${fmtDate(d.d)}</div><button onclick="firebase.database().ref('diary/${k}').remove()" class="absolute top-1 right-1 text-red-300 hover:text-red-500 font-bold px-2">✕</button></div>`});}
-        function renderSaude(growth,meds){const gl=document.getElementById('growth-log');gl.innerHTML='';Object.entries(growth).reverse().filter(([k,v])=>isRecent(v.date)).forEach(([k,g])=>{gl.innerHTML+=`<div class="list-item-row"><span>📅 ${fmtDate(g.date)} <b class="ml-2">${g.p}kg</b> | <b>${g.a}cm</b></span><button onclick="firebase.database().ref('growth/${k}').remove()" class="btn-delete">✕</button></div>`});const ml=document.getElementById('med-log');ml.innerHTML='';Object.entries(meds).reverse().filter(([k,v])=>isRecent(v.d)).forEach(([k,m])=>{ml.innerHTML+=`<div class="list-item-row"><span>💊 <b>${m.t}</b> - ${fmtDate(m.d)}</span><button onclick="firebase.database().ref('meds/${k}').remove()" class="btn-delete">✕</button></div>`});}
-        
-        // CORREÇÃO DO CÁLCULO DE MÉDIA
-        function renderEstoque(stock,logsObj){
-            const l=document.getElementById('main-list');let f=0,c=0,cnt=0;l.innerHTML='';
-            const createItem=(k,n,q,g,h)=>{const cl=g>0?'border-red-400 bg-red-50 text-red-500':'border-emerald-400 bg-emerald-50 text-emerald-600';return`<li class="bg-white p-3 rounded-2xl border border-stone-200 shadow-sm flex items-center justify-between"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full border-2 flex items-center justify-center font-bold ${cl}">${g>0?'!':'✓'}</div><div><p class="font-bold ${h?'text-emerald-700':'text-gray-800'}">${n}</p><p class="text-[10px] text-gray-500">${g>0?`Faltam ${g}`:'Ok'}</p></div></div><div class="flex items-center gap-2"><span class="font-bold text-gray-700">${q}<small class="text-gray-400 font-normal">un</small></span><button onclick="editItem('${k}',${q})" class="p-2 bg-stone-100 rounded text-gray-400 hover:text-emerald-600">✏️</button></div></li>`};
-            if(currentFilter==='all'||currentFilter==='fraldas')for(let s in market.fraldas){const h=stock[s]||0,g=Math.max(0,market.fraldas[s]-h);f+=g*prices.fralda;c+=h*prices.fralda;cnt+=h;l.innerHTML+=createItem(s,`Fralda ${s}`,h,g,false)}
-            if(currentFilter==='all'||currentFilter==='higiene')for(let i in market.higiene){const h=stock[i]||0,g=Math.max(0,market.higiene[i]-h);f+=g*(prices[i]||0);c+=h*(prices[i]||0);cnt+=h;l.innerHTML+=createItem(i,labels[i],h,g,true)}
-            
-            // CÁLCULO CORRIGIDO DE MÉDIA DE USO
-            const logs = Object.values(logsObj).sort((a,b) => {
-                const dateA = a.date ? new Date(a.date) : new Date(a);
-                const dateB = b.date ? new Date(b.date) : new Date(b);
-                return dateA - dateB;
-            });
-
-            if(logs.length > 1){
-                const getD = (i) => i.date ? new Date(i.date) : new Date(i);
-                const diffMs = Math.abs(getD(logs[logs.length-1]) - getD(logs[0]));
-                const days = Math.max(1, diffMs / 86400000);
-                document.getElementById('media-val').innerText = (logs.length/days).toFixed(1)+'/d';
-            } else {
-                document.getElementById('media-val').innerText = '--';
-            }
-
-            document.getElementById('future-cost').innerText='R$ '+f.toFixed(0);document.getElementById('stock-val').innerText='R$ '+c.toFixed(0);document.getElementById('total-count').innerText=cnt;
-        }
-
-        function renderWishes(w){const l=document.getElementById('wish-log');l.innerHTML='';Object.entries(w).forEach(([k,v])=>{l.innerHTML+=`<div class="list-item-row"><span class="font-medium text-gray-700">${v.t}</span><button onclick="firebase.database().ref('wishes/${k}').remove()" class="text-xs bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full font-bold">✓ Já Tenho</button></div>`})}
         function toggleNap(){firebase.database().ref('napStatus').once('value',s=>{const st=s.val();if(st&&st.sleeping){const end=new Date();const m=Math.round((end-new Date(st.start))/60000);firebase.database().ref('naps').push().set({start:st.start,end:end.toISOString(),duration:m});firebase.database().ref('napStatus').set({sleeping:false})}else{firebase.database().ref('napStatus').set({sleeping:true,start:new Date().toISOString()})}})}
         function editItem(k,q){let n=prompt(`Nova qtd:`,q);if(n!==null&&n.trim()!=="")firebase.database().ref('stock/'+k).set(parseInt(n))}
         function addItem(){const c=document.getElementById('cat-input').value;const k=c==='fralda'?document.getElementById('size-input').value:c;const q=parseInt(document.getElementById('qty-input').value)||0;if(q>0){firebase.database().ref('stock/'+k).transaction(v=>(v||0)+q);document.getElementById('qty-input').value=''}}
