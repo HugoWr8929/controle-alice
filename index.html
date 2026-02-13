@@ -17,15 +17,11 @@
         body { @apply bg-stone-100 text-gray-700 font-sans overflow-x-hidden; }
         .card { @apply bg-white p-5 rounded-3xl shadow-sm border border-stone-200; }
         .input-style { @apply w-full border border-stone-300 rounded-xl p-3 text-sm bg-stone-50 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all; }
-        .label-style { @apply block text-sm font-medium text-gray-600 mb-1; }
+        .label-style { @apply block text-xs font-bold text-emerald-800 uppercase tracking-wide mb-1; }
         
-        /* MENU LATERAL (Corrigido) */
-        /* O estado padrão é escondido (-translate-x-full) */
+        /* MENU LATERAL */
         .sidebar { @apply fixed inset-y-0 left-0 w-72 bg-emerald-900 text-white transform -translate-x-full transition-transform duration-300 ease-in-out z-50 shadow-2xl flex flex-col; }
-        /* Quando tem a classe 'open', ele aparece (translate-x-0) */
         .sidebar.open { @apply translate-x-0; }
-        
-        /* OVERLAY (Fundo escuro) */
         .overlay { @apply fixed inset-0 bg-black/50 z-40 hidden opacity-0 transition-opacity duration-300 backdrop-blur-sm; }
         .overlay.open { @apply block opacity-100; }
 
@@ -38,6 +34,7 @@
         .filter-inactive { @apply bg-stone-200 text-gray-500 hover:bg-stone-300; }
         .btn-primary { @apply w-full bg-emerald-700 text-white py-3 rounded-xl font-bold hover:bg-emerald-800 transition-all shadow-sm active:scale-95; }
         .btn-big { @apply w-full bg-emerald-700 text-white font-black py-4 rounded-2xl shadow-md hover:bg-emerald-800 transition-all active:scale-95 text-lg uppercase; }
+        .btn-toggle-hist { @apply text-[10px] bg-stone-200 text-stone-600 px-2 py-1 rounded hover:bg-emerald-100 hover:text-emerald-700 transition font-bold; }
         
         .hidden { display: none !important; }
         .list-item-row { @apply flex justify-between items-center bg-stone-50 p-3 rounded-xl border border-stone-200 text-sm mb-2; }
@@ -68,18 +65,11 @@
                 <button onclick="toggleMenu()" class="text-emerald-300 hover:text-white">✕</button>
             </div>
             <nav class="flex-1 overflow-y-auto py-2">
-                <div onclick="switchTab('estoque')" class="menu-item active" id="link-estoque">
-                    <span>📦</span> Estoque & Compras
-                </div>
-                <div onclick="switchTab('saude')" class="menu-item" id="link-saude">
-                    <span>🏥</span> Saúde & Crescimento
-                </div>
-                <div onclick="switchTab('rotina')" class="menu-item" id="link-rotina">
-                    <span>⏰</span> Rotina (Sono/Mamar)
-                </div>
-                <div onclick="switchTab('wish')" class="menu-item" id="link-wish">
-                    <span>✨</span> Lista de Desejos
-                </div>
+                <div onclick="switchTab('estoque')" class="menu-item active" id="link-estoque">📦 Estoque & Compras</div>
+                <div onclick="switchTab('saude')" class="menu-item" id="link-saude">🏥 Saúde & Crescimento</div>
+                <div onclick="switchTab('rotina')" class="menu-item" id="link-rotina">⏰ Rotina (Sono/Mamar)</div>
+                <div onclick="switchTab('wish')" class="menu-item" id="link-wish">✨ Lista de Desejos</div>
+                <div onclick="switchTab('profile')" class="menu-item" id="link-profile">🪪 Perfil & Emergência</div>
             </nav>
             <div class="p-6 border-t border-emerald-800 bg-emerald-950">
                 <button onclick="toggleAvoMode()" id="avo-btn" class="w-full mb-4 text-xs bg-emerald-800 py-3 rounded-lg text-center hover:bg-emerald-700 transition font-bold">Modo Avós: OFF</button>
@@ -109,23 +99,18 @@
             
             <div id="tab-estoque" class="tab-content">
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-                    <div class="card p-4 flex flex-col justify-center text-center"><p class="text-[10px] uppercase text-gray-400">Falta Comprar</p><p id="future-cost" class="text-xl font-bold text-gray-800">R$ 0</p></div>
-                    <div class="card p-4 flex flex-col justify-center text-center"><p class="text-[10px] uppercase text-gray-400">Média Real</p><p id="media-val" class="text-xl font-bold text-blue-600">--</p></div>
-                    <div class="card p-4 flex flex-col justify-center text-center"><p class="text-[10px] uppercase text-gray-400">Em Estoque</p><p id="stock-val" class="text-xl font-bold text-green-600">R$ 0</p></div>
-                    <div class="card p-4 flex flex-col justify-center text-center"><p class="text-[10px] uppercase text-gray-400">Total Itens</p><p id="total-count" class="text-xl font-bold text-gray-800">0</p></div>
+                    <div class="card p-4 text-center"><p class="text-[10px] uppercase text-gray-400">Falta Comprar</p><p id="future-cost" class="text-xl font-bold text-gray-800">R$ 0</p></div>
+                    <div class="card p-4 text-center"><p class="text-[10px] uppercase text-gray-400">Média Real</p><p id="media-val" class="text-xl font-bold text-blue-600">--</p></div>
+                    <div class="card p-4 text-center"><p class="text-[10px] uppercase text-gray-400">Em Estoque</p><p id="stock-val" class="text-xl font-bold text-green-600">R$ 0</p></div>
+                    <div class="card p-4 text-center"><p class="text-[10px] uppercase text-gray-400">Total Itens</p><p id="total-count" class="text-xl font-bold text-gray-800">0</p></div>
                 </div>
-
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
                     <div class="space-y-6">
                         <div class="card bg-stone-50 border-stone-200">
-                            <h2 class="text-sm font-bold text-emerald-800 uppercase mb-4 flex items-center gap-2">
-                                🛒 Lançar Compra
-                            </h2>
+                            <h2 class="text-sm font-bold text-emerald-800 uppercase mb-4">🛒 Lançar Compra</h2>
                             <div class="space-y-3">
                                 <select id="cat-input" class="input-style" onchange="toggleSizeInput()">
-                                    <option value="fralda">Fraldas</option><option value="lenco">Lenços</option><option value="pomada">Pomadas</option>
-                                    <option value="creme_assadura">Creme Assadura</option><option value="shampoo">Shampoo</option><option value="condicionador">Condicionador</option>
-                                    <option value="sabonete_liq">Sabonete Líq.</option><option value="sabao_barra">Sabão Barra</option><option value="oleo">Óleo</option><option value="talco">Talco</option>
+                                    <option value="fralda">Fraldas</option><option value="lenco">Lenços</option><option value="pomada">Pomadas</option><option value="creme_assadura">Creme Assadura</option><option value="shampoo">Shampoo</option><option value="condicionador">Condicionador</option><option value="sabonete_liq">Sabonete Líq.</option><option value="sabao_barra">Sabão Barra</option><option value="oleo">Óleo</option><option value="talco">Talco</option>
                                 </select>
                                 <div id="size-wrapper"><select id="size-input" class="input-style"><option>RN</option><option>P</option><option>M</option><option>G</option><option>XG</option></select></div>
                                 <input type="number" id="qty-input" placeholder="Qtd (+)" class="input-style">
@@ -134,7 +119,6 @@
                         </div>
                         <button onclick="registerUsage()" class="btn-big">Troquei a Alice! 🧷</button>
                     </div>
-
                     <div class="lg:col-span-2 space-y-4">
                         <div class="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
                             <button onclick="setFilter('all')" id="filter-all" class="filter-btn filter-active">TUDO</button>
@@ -150,210 +134,195 @@
 
             <div id="tab-saude" class="tab-content hidden grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div class="card">
-                    <h2 class="font-bold text-lg text-emerald-800 mb-4">📏 Crescimento</h2>
-                    <div class="flex gap-2 mb-4"><input type="number" step="0.1" id="p-in" placeholder="Kg" class="input-style"><input type="number" id="a-in" placeholder="Cm" class="input-style"><button onclick="addGrowth()" class="bg-emerald-700 text-white px-4 rounded-xl font-bold shadow-lg hover:bg-emerald-800 active:scale-95 transition">+</button></div>
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="font-bold text-lg text-emerald-800">📏 Crescimento</h2>
+                        <button onclick="toggleHistory()" class="btn-toggle-hist" id="hist-btn-saude">📅 Ver Tudo</button>
+                    </div>
+                    <div class="flex gap-2 mb-4"><input type="number" step="0.1" id="p-in" placeholder="Kg" class="input-style"><input type="number" id="a-in" placeholder="Cm" class="input-style"><button onclick="addGrowth()" class="bg-emerald-700 text-white px-4 rounded-xl font-bold shadow">+</button></div>
                     <div id="growth-log" class="space-y-1 max-h-64 overflow-y-auto"></div>
                 </div>
                 <div class="card">
-                    <h2 class="font-bold text-lg text-emerald-800 mb-4">💊 Medicamentos</h2>
-                    <div class="flex gap-2 mb-4"><input type="text" id="med-in" placeholder="Nome" class="input-style"><button onclick="addMed()" class="bg-emerald-700 text-white px-4 rounded-xl font-bold shadow-lg hover:bg-emerald-800 active:scale-95 transition">+</button></div>
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="font-bold text-lg text-emerald-800">💊 Medicamentos</h2>
+                    </div>
+                    <div class="flex gap-2 mb-4"><input type="text" id="med-in" placeholder="Nome" class="input-style"><button onclick="addMed()" class="bg-emerald-700 text-white px-4 rounded-xl font-bold shadow">+</button></div>
                     <div id="med-log" class="space-y-1 max-h-64 overflow-y-auto"></div>
                 </div>
             </div>
 
             <div id="tab-rotina" class="tab-content hidden space-y-6">
+                <div class="flex justify-end"><button onclick="toggleHistory()" class="btn-toggle-hist" id="hist-btn-rotina">📅 Ver Histórico Completo</button></div>
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div class="card">
                         <h2 class="font-bold text-lg text-emerald-800 mb-4">🤱 Amamentação</h2>
-                        <div class="grid grid-cols-2 gap-3 mb-4">
-                            <button onclick="regFeed('Esq')" class="bg-white border-2 border-pink-200 text-pink-700 font-bold py-3 rounded-xl hover:bg-pink-50 active:scale-95 transition">ESQUERDO</button>
-                            <button onclick="regFeed('Dir')" class="bg-white border-2 border-blue-200 text-blue-700 font-bold py-3 rounded-xl hover:bg-blue-50 active:scale-95 transition">DIREITO</button>
-                        </div>
-                        <h3 class="text-[10px] font-bold text-gray-400 uppercase mb-2">Histórico (7 dias)</h3>
+                        <div class="grid grid-cols-2 gap-3 mb-4"><button onclick="regFeed('Esq')" class="bg-white border-2 border-pink-200 text-pink-700 font-bold py-3 rounded-xl hover:bg-pink-50">ESQUERDO</button><button onclick="regFeed('Dir')" class="bg-white border-2 border-blue-200 text-blue-700 font-bold py-3 rounded-xl hover:bg-blue-50">DIREITO</button></div>
                         <div id="feed-log" class="space-y-1 max-h-48 overflow-y-auto"></div>
                     </div>
-
                     <div class="card">
                         <h2 class="font-bold text-lg text-emerald-800 mb-4">😴 Soneca</h2>
-                        <div class="bg-stone-50 p-4 rounded-2xl mb-4 text-center border border-stone-200">
-                            <p id="nap-status-text" class="text-sm text-gray-500 mb-2 font-medium">Acordada</p>
-                            <button id="nap-toggle-btn" onclick="toggleNap()" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl shadow hover:bg-indigo-700 active:scale-95 transition">🌙 INICIAR</button>
-                        </div>
-                        <h3 class="text-[10px] font-bold text-gray-400 uppercase mb-2">Histórico (7 dias)</h3>
+                        <div class="bg-stone-50 p-4 rounded-2xl mb-4 text-center border border-stone-200"><p id="nap-status-text" class="text-sm text-gray-500 mb-2 font-medium">Acordada</p><button id="nap-toggle-btn" onclick="toggleNap()" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl shadow">🌙 INICIAR</button></div>
                         <div id="nap-log" class="space-y-1 max-h-48 overflow-y-auto"></div>
                     </div>
                 </div>
-                
                 <div class="card">
                     <h2 class="font-bold text-lg text-emerald-800 mb-4">📖 Diário</h2>
-                    <textarea id="diary-in" class="input-style h-20 mb-2 resize-none" placeholder="Escreva algo..."></textarea>
-                    <button onclick="addDiary()" class="btn-primary">Salvar no Diário</button>
+                    <textarea id="diary-in" class="input-style h-20 mb-2 resize-none" placeholder="Escreva..."></textarea>
+                    <button onclick="addDiary()" class="btn-primary">Salvar</button>
                     <div id="diary-log" class="mt-4 space-y-2 max-h-60 overflow-y-auto"></div>
                 </div>
             </div>
 
             <div id="tab-wish" class="tab-content hidden">
                 <div class="card max-w-3xl mx-auto">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="font-bold text-lg text-emerald-800">✨ Desejos</h2>
-                        <div class="flex gap-2">
-                            <button onclick="exportWishlistCSV()" class="text-[10px] bg-green-100 text-green-700 px-3 py-2 rounded-lg font-bold hover:bg-green-200 transition">CSV</button>
-                            <button onclick="exportWishlistPDF()" class="text-[10px] bg-red-100 text-red-700 px-3 py-2 rounded-lg font-bold hover:bg-red-200 transition">PDF</button>
-                        </div>
-                    </div>
-                    <div class="flex gap-2 mb-6"><input type="text" id="wish-in" class="input-style" placeholder="Item..."><button onclick="addWish()" class="bg-emerald-700 text-white px-4 rounded-xl font-bold shadow-lg hover:bg-emerald-800 active:scale-95 transition">+</button></div>
+                    <div class="flex justify-between items-center mb-6"><h2 class="font-bold text-lg text-emerald-800">✨ Desejos</h2><div class="flex gap-2"><button onclick="exportWishlistCSV()" class="text-[10px] bg-green-100 text-green-700 px-3 py-2 rounded-lg font-bold">CSV</button><button onclick="exportWishlistPDF()" class="text-[10px] bg-red-100 text-red-700 px-3 py-2 rounded-lg font-bold">PDF</button></div></div>
+                    <div class="flex gap-2 mb-6"><input type="text" id="wish-in" class="input-style" placeholder="Item..."><button onclick="addWish()" class="bg-emerald-700 text-white px-4 rounded-xl font-bold shadow">+</button></div>
                     <div id="wish-log" class="space-y-2"></div>
                 </div>
             </div>
+
+            <div id="tab-profile" class="tab-content hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="card border-l-4 border-l-red-500">
+                        <h2 class="text-lg font-bold text-red-700 mb-4 flex items-center gap-2">🏥 Dados Médicos & Emergência</h2>
+                        <div class="space-y-4">
+                            <div><label class="label-style">Tipo Sanguíneo</label>
+                                <select id="prof-blood" class="input-style" onchange="saveProfile()"><option value="">Selecione...</option><option value="A+">A+</option><option value="A-">A-</option><option value="B+">B+</option><option value="B-">B-</option><option value="AB+">AB+</option><option value="AB-">AB-</option><option value="O+">O+</option><option value="O-">O-</option></select>
+                            </div>
+                            <div><label class="label-style">Alergias (Importante!)</label><textarea id="prof-allergy" class="input-style h-20 bg-red-50 border-red-200" placeholder="Ex: Proteína do leite, Dipirona..." onblur="saveProfile()"></textarea></div>
+                            <div><label class="label-style">Nº Carteirinha (SUS/Convênio)</label><input type="text" id="prof-insurance" class="input-style" placeholder="000.000.000" onblur="saveProfile()"></div>
+                            <div><label class="label-style">Hospital de Preferência</label><input type="text" id="prof-hospital" class="input-style" placeholder="Nome do Hospital" onblur="saveProfile()"></div>
+                        </div>
+                    </div>
+
+                    <div class="card border-l-4 border-l-blue-500">
+                        <h2 class="text-lg font-bold text-blue-700 mb-4">📞 Contatos & Endereço</h2>
+                        <div class="space-y-4">
+                            <div><label class="label-style">Pediatra (Nome/Tel)</label><input type="text" id="prof-pediatrician" class="input-style" placeholder="Dr. Nome - (11) 99999-9999" onblur="saveProfile()"></div>
+                            <div><label class="label-style">Mãe (Tel)</label><input type="text" id="prof-mom" class="input-style" placeholder="(11) 99999-9999" onblur="saveProfile()"></div>
+                            <div><label class="label-style">Pai (Tel)</label><input type="text" id="prof-dad" class="input-style" placeholder="(11) 99999-9999" onblur="saveProfile()"></div>
+                            <div><label class="label-style">Endereço Completo</label><textarea id="prof-address" class="input-style h-24" placeholder="Rua, Número, Bairro, CEP" onblur="saveProfile()"></textarea></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </main>
     </div>
 
     <script>
         // --- 1. CONFIGURAÇÕES ---
-        // ! IMPORTANTE: Mude esta data para a previsão de parto real (Ano-Mês-Dia) !
         const DATA_NASCIMENTO = new Date("2026-04-23T00:00:00"); 
+        const firebaseConfig = { apiKey: "AIzaSyDxoVagw1NT72ywjK_svZeBt2beCowoZx8", authDomain: "alice-erp.firebaseapp.com", databaseURL: "https://alice-erp-default-rtdb.firebaseio.com", projectId: "alice-erp", storageBucket: "alice-erp.firebasestorage.app", messagingSenderId: "758898829901", appId: "1:758898829901:web:98125a74abcdf144930a04", measurementId: "G-64NHJVVMB6" };
+        firebase.initializeApp(firebaseConfig); const auth = firebase.auth(); const db = firebase.database();
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyDxoVagw1NT72ywjK_svZeBt2beCowoZx8",
-            authDomain: "alice-erp.firebaseapp.com",
-            databaseURL: "https://alice-erp-default-rtdb.firebaseio.com",
-            projectId: "alice-erp",
-            storageBucket: "alice-erp.firebasestorage.app",
-            messagingSenderId: "758898829901",
-            appId: "1:758898829901:web:98125a74abcdf144930a04",
-            measurementId: "G-64NHJVVMB6"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.database();
-
-        // Dados de Mercado
         const market = { fraldas: { 'RN': 200, 'P': 800, 'M': 1300, 'G': 1600, 'XG': 800 }, higiene: { 'lenco': 120, 'pomada': 24, 'creme_assadura': 12, 'shampoo': 10, 'condicionador': 8, 'sabonete_liq': 15, 'sabao_barra': 20, 'oleo': 5, 'talco': 3 } };
         const prices = { fralda: 1.15, lenco: 12, pomada: 25, creme_assadura: 30, shampoo: 18, condicionador: 20, sabonete_liq: 24, sabao_barra: 5, oleo: 30, talco: 15 };
         const labels = { lenco: 'Lenços', pomada: 'Pomada', creme_assadura: 'Creme', shampoo: 'Shampoo', condicionador: 'Condicionador', sabonete_liq: 'Sabonete Líq.', sabao_barra: 'Sabão Barra', oleo: 'Óleo', talco: 'Talco' };
+        
         let currentFilter = 'all';
+        let showAllHistory = false; // Controle de visualização de histórico
+        let lastDataSnapshot = {}; // Cache para re-renderizar sem fetch
 
-        // --- 2. MENU RESPONSIVO (CORRIGIDO) ---
-        function toggleMenu() {
-            const sb = document.getElementById('sidebar');
-            const ov = document.getElementById('overlay');
-            // Apenas alterna a classe 'open' que contém as regras de CSS
-            sb.classList.toggle('open');
-            ov.classList.toggle('open');
-        }
-
-        function switchTab(t) {
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
-            document.getElementById('tab-' + t).classList.remove('hidden');
-            
-            // Atualiza destaque no menu
-            document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
-            const link = document.getElementById('link-' + t);
-            if(link) link.classList.add('active');
-            
-            // Fecha o menu se estiver aberto (mobile)
-            const sb = document.getElementById('sidebar');
-            if(sb.classList.contains('open')) {
-                toggleMenu();
-            }
-        }
-
-        // --- 3. RELÓGIO (CRONÔMETRO) ---
+        // --- 2. UI & RELÓGIO ---
         function updateClock() {
-            const now = new Date();
-            const diff = DATA_NASCIMENTO - now;
-            const el = document.getElementById('timer-val');
+            const now = new Date(); const diff = DATA_NASCIMENTO - now; const el = document.getElementById('timer-val');
+            if(diff > 0) { const d=Math.floor(diff/86400000), h=Math.floor((diff%86400000)/3600000); el.innerText = `Faltam: ${d}d ${h}h`; el.classList.replace('text-emerald-600', 'text-orange-500'); }
+            else { const a=now-DATA_NASCIMENTO, d=Math.floor(a/86400000), m=Math.floor(d/30), ds=d%30; el.innerText = `Idade: ${m}m ${ds}d`; el.classList.replace('text-orange-500', 'text-emerald-600'); }
+        }
+        setInterval(updateClock, 1000); updateClock();
+
+        function toggleMenu() { const sb=document.getElementById('sidebar'), ov=document.getElementById('overlay'); sb.classList.toggle('open'); ov.classList.toggle('open'); }
+        function switchTab(t) { document.querySelectorAll('.tab-content').forEach(c=>c.classList.add('hidden')); document.getElementById('tab-'+t).classList.remove('hidden'); document.querySelectorAll('.menu-item').forEach(m=>m.classList.remove('active')); const l=document.getElementById('link-'+t); if(l)l.classList.add('active'); if(document.getElementById('sidebar').classList.contains('open')) toggleMenu(); }
+        
+        function toggleHistory() { 
+            showAllHistory = !showAllHistory; 
+            const txt = showAllHistory ? "📅 Ver Menos (7 dias)" : "📅 Ver Histórico Completo";
+            if(document.getElementById('hist-btn-saude')) document.getElementById('hist-btn-saude').innerText = txt;
+            if(document.getElementById('hist-btn-rotina')) document.getElementById('hist-btn-rotina').innerText = txt;
             
-            if(diff > 0) {
-                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                el.innerText = `Faltam: ${days}d ${hours}h`;
-                el.classList.replace('text-emerald-600', 'text-orange-500');
-            } else {
-                const ageDiff = now - DATA_NASCIMENTO;
-                const daysOld = Math.floor(ageDiff / (1000 * 60 * 60 * 24));
-                const months = Math.floor(daysOld / 30);
-                const days = daysOld % 30;
-                el.innerText = `Idade: ${months}m ${days}d`;
-                el.classList.replace('text-orange-500', 'text-emerald-600');
-            }
+            // Re-renderiza com os dados em cache
+            renderRotina(lastDataSnapshot.feeds||{}, lastDataSnapshot.diary||{}, lastDataSnapshot.naps||{}, lastDataSnapshot.napStatus||{});
+            renderSaude(lastDataSnapshot.growth||{}, lastDataSnapshot.meds||{});
         }
-        setInterval(updateClock, 1000);
-        updateClock();
 
-        // --- 4. LÓGICA DO APP (Firebase) ---
-        auth.onAuthStateChanged(user => {
-            if(user) {
-                document.getElementById('login-screen').classList.add('hidden');
-                document.getElementById('main-app').classList.remove('hidden');
-                startSync();
-            } else {
-                document.getElementById('login-screen').classList.remove('hidden');
-                document.getElementById('main-app').classList.add('hidden');
-            }
-        });
-
-        async function handleLogin() {
-            try { await auth.signInWithEmailAndPassword(document.getElementById('login-email').value, document.getElementById('login-password').value); } 
-            catch(e) { document.getElementById('login-error').innerText=e.message; document.getElementById('login-error').classList.remove('hidden'); }
-        }
+        // --- 3. FIREBASE SYNC ---
+        auth.onAuthStateChanged(u => { if(u){document.getElementById('login-screen').classList.add('hidden');document.getElementById('main-app').classList.remove('hidden');startSync();}else{document.getElementById('login-screen').classList.remove('hidden');document.getElementById('main-app').classList.add('hidden');}});
+        async function handleLogin() { try{await auth.signInWithEmailAndPassword(document.getElementById('login-email').value, document.getElementById('login-password').value);}catch(e){document.getElementById('login-error').innerText=e.message;document.getElementById('login-error').classList.remove('hidden');}}
         function handleLogout() { auth.signOut(); }
 
         function startSync() {
             db.ref().on('value', snap => {
                 const data = snap.val() || {};
+                lastDataSnapshot = data; // Cache
                 renderEstoque(data.stock || {}, data.usageLogs || {});
                 renderSaude(data.growth || {}, data.meds || {});
                 renderRotina(data.feeds || {}, data.diary || {}, data.naps || {}, data.napStatus || {});
                 renderWishes(data.wishes || {});
+                renderProfile(data.profile || {}); // Renderiza Perfil
             });
         }
 
-        // Utils
-        function fmtDate(iso) { if(!iso) return ''; return new Date(iso).toLocaleString('pt-BR', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'}).replace(',',' às'); }
-        function isRecent(iso) { if(!iso) return false; const d = new Date(iso); const ago = new Date(); ago.setDate(ago.getDate()-7); return d >= ago; }
+        // --- 4. PERFIL (NOVO) ---
+        function saveProfile() {
+            const profileData = {
+                blood: document.getElementById('prof-blood').value,
+                allergy: document.getElementById('prof-allergy').value,
+                insurance: document.getElementById('prof-insurance').value,
+                hospital: document.getElementById('prof-hospital').value,
+                pediatrician: document.getElementById('prof-pediatrician').value,
+                mom: document.getElementById('prof-mom').value,
+                dad: document.getElementById('prof-dad').value,
+                address: document.getElementById('prof-address').value
+            };
+            db.ref('profile').set(profileData);
+        }
 
-        // Renders
+        function renderProfile(p) {
+            if(!p) return;
+            // Preenche os campos se eles não estiverem em foco (para não atrapalhar digitação)
+            const fill = (id, val) => { const el=document.getElementById(id); if(el && document.activeElement !== el) el.value = val || ''; };
+            fill('prof-blood', p.blood); fill('prof-allergy', p.allergy); fill('prof-insurance', p.insurance);
+            fill('prof-hospital', p.hospital); fill('prof-pediatrician', p.pediatrician);
+            fill('prof-mom', p.mom); fill('prof-dad', p.dad); fill('prof-address', p.address);
+        }
+
+        // --- 5. RENDERIZADORES (COM FILTRO DE HISTÓRICO) ---
+        function fmtDate(iso) { if(!iso) return ''; return new Date(iso).toLocaleString('pt-BR', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'}).replace(',',' às'); }
+        function isRecent(iso) { 
+            if(showAllHistory) return true; // Se toggle ativado, mostra tudo
+            if(!iso) return false; const d=new Date(iso), a=new Date(); a.setDate(a.getDate()-7); return d >= a; 
+        }
+
         function renderRotina(feeds, diary, naps, napStatus) {
-            const fl = document.getElementById('feed-log'); fl.innerHTML='';
+            const fl=document.getElementById('feed-log'); fl.innerHTML='';
             Object.entries(feeds).reverse().filter(([k,v])=>isRecent(v.d)).forEach(([k,v])=>{ fl.innerHTML+=`<div class="list-item-row"><span class="text-gray-600">🤱 <b>${v.s}</b> - ${fmtDate(v.d)}</span><button onclick="db.ref('feeds/${k}').remove()" class="btn-delete">✕</button></div>`; });
 
-            const nl = document.getElementById('nap-log'); nl.innerHTML='';
+            const nl=document.getElementById('nap-log'); nl.innerHTML='';
             Object.entries(naps).reverse().filter(([k,v])=>isRecent(v.start)).forEach(([k,v])=>{ nl.innerHTML+=`<div class="list-item-row"><span class="text-gray-600">😴 <b>${v.duration}min</b> - ${fmtDate(v.start)}</span><button onclick="db.ref('naps/${k}').remove()" class="btn-delete">✕</button></div>`; });
 
-            const nb = document.getElementById('nap-toggle-btn'); const nt = document.getElementById('nap-status-text');
-            if(napStatus && napStatus.sleeping) {
-                const m = Math.round((new Date() - new Date(napStatus.start))/60000);
-                nb.innerText="☀️ ACORDOU"; nb.className="w-full bg-orange-500 text-white font-bold py-3 rounded-xl shadow";
-                nt.innerText=`Dormindo há ${m} min`;
-            } else {
-                nb.innerText="🌙 INICIAR"; nb.className="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl shadow";
-                nt.innerText="Acordada";
-            }
+            const nb=document.getElementById('nap-toggle-btn'), nt=document.getElementById('nap-status-text');
+            if(napStatus&&napStatus.sleeping){const m=Math.round((new Date()-new Date(napStatus.start))/60000); nb.innerText="☀️ ACORDOU"; nb.className="w-full bg-orange-500 text-white font-bold py-3 rounded-xl shadow"; nt.innerText=`Dormindo há ${m} min`;}
+            else{nb.innerText="🌙 INICIAR"; nb.className="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl shadow"; nt.innerText="Acordada";}
 
-            const dl = document.getElementById('diary-log'); dl.innerHTML='';
+            const dl=document.getElementById('diary-log'); dl.innerHTML='';
             Object.entries(diary).reverse().filter(([k,v])=>isRecent(v.d)).forEach(([k,d])=>{ dl.innerHTML+=`<div class="bg-white p-3 rounded-xl border-l-4 border-emerald-500 shadow-sm relative text-sm"><div class="italic text-gray-600 pr-6">"${d.t}"</div><div class="text-[10px] text-gray-400 mt-1 not-italic">${fmtDate(d.d)}</div><button onclick="db.ref('diary/${k}').remove()" class="absolute top-1 right-1 text-red-300 hover:text-red-500 font-bold px-2">✕</button></div>`; });
         }
 
         function renderSaude(growth, meds) {
-            const gl=document.getElementById('growth-log'); gl.innerHTML=''; Object.entries(growth).reverse().forEach(([k,g])=>{ gl.innerHTML+=`<div class="list-item-row"><span>📅 ${fmtDate(g.date)} <b class="ml-2">${g.p}kg</b> | <b>${g.a}cm</b></span><button onclick="db.ref('growth/${k}').remove()" class="btn-delete">✕</button></div>`});
-            const ml=document.getElementById('med-log'); ml.innerHTML=''; Object.entries(meds).reverse().forEach(([k,m])=>{ ml.innerHTML+=`<div class="list-item-row"><span>💊 <b>${m.t}</b> - ${fmtDate(m.d)}</span><button onclick="db.ref('meds/${k}').remove()" class="btn-delete">✕</button></div>`});
+            const gl=document.getElementById('growth-log'); gl.innerHTML=''; Object.entries(growth).reverse().filter(([k,v])=>isRecent(v.date)).forEach(([k,g])=>{ gl.innerHTML+=`<div class="list-item-row"><span>📅 ${fmtDate(g.date)} <b class="ml-2">${g.p}kg</b> | <b>${g.a}cm</b></span><button onclick="db.ref('growth/${k}').remove()" class="btn-delete">✕</button></div>`});
+            const ml=document.getElementById('med-log'); ml.innerHTML=''; Object.entries(meds).reverse().filter(([k,v])=>isRecent(v.d)).forEach(([k,m])=>{ ml.innerHTML+=`<div class="list-item-row"><span>💊 <b>${m.t}</b> - ${fmtDate(m.d)}</span><button onclick="db.ref('meds/${k}').remove()" class="btn-delete">✕</button></div>`});
         }
 
+        // Resto das funções (Estoque, Wishlist, Escritas) mantidas iguais
         function renderEstoque(stock, logsObj) {
             const l=document.getElementById('main-list'); let f=0,c=0,cnt=0; l.innerHTML='';
             const createItem = (k,n,q,g,h) => { const cl=g>0?'border-red-400 bg-red-50 text-red-500':'border-emerald-400 bg-emerald-50 text-emerald-600'; return `<li class="bg-white p-3 rounded-2xl border border-stone-200 shadow-sm flex items-center justify-between"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full border-2 flex items-center justify-center font-bold ${cl}">${g>0?'!':'✓'}</div><div><p class="font-bold ${h?'text-emerald-700':'text-gray-800'}">${n}</p><p class="text-[10px] text-gray-500">${g>0?`Faltam ${g}`:'Ok'}</p></div></div><div class="flex items-center gap-2"><span class="font-bold text-gray-700">${q}<small class="text-gray-400 font-normal">un</small></span><button onclick="editItem('${k}',${q})" class="p-2 bg-stone-100 rounded text-gray-400 hover:text-emerald-600">✏️</button></div></li>`; }
-            
             if(currentFilter==='all'||currentFilter==='fraldas') for(let s in market.fraldas){const h=stock[s]||0,g=Math.max(0,market.fraldas[s]-h);f+=g*prices.fralda;c+=h*prices.fralda;cnt+=h;l.innerHTML+=createItem(s,`Fralda ${s}`,h,g,false);}
             if(currentFilter==='all'||currentFilter==='higiene') for(let i in market.higiene){const h=stock[i]||0,g=Math.max(0,market.higiene[i]-h);f+=g*(prices[i]||0);c+=h*(prices[i]||0);cnt+=h;l.innerHTML+=createItem(i,labels[i],h,g,true);}
-            
             const logs=Object.values(logsObj); if(logs.length>1){const d=Math.max(1,(new Date(logs[logs.length-1])-new Date(logs[0]))/86400000);document.getElementById('media-val').innerText=(logs.length/d).toFixed(1)+'/d';}
             document.getElementById('future-cost').innerText='R$ '+f.toFixed(0); document.getElementById('stock-val').innerText='R$ '+c.toFixed(0); document.getElementById('total-count').innerText=cnt;
         }
-
         function renderWishes(w){const l=document.getElementById('wish-log');l.innerHTML='';Object.entries(w).forEach(([k,v])=>{l.innerHTML+=`<div class="list-item-row"><span class="font-medium text-gray-700">${v.t}</span><button onclick="db.ref('wishes/${k}').remove()" class="text-xs bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full font-bold">✓ Já Tenho</button></div>`;});}
-
-        // ESCRITAS
         function toggleNap(){db.ref('napStatus').once('value',s=>{const st=s.val();if(st&&st.sleeping){const end=new Date();const m=Math.round((end-new Date(st.start))/60000);db.ref('naps').push().set({start:st.start,end:end.toISOString(),duration:m});db.ref('napStatus').set({sleeping:false});}else{db.ref('napStatus').set({sleeping:true,start:new Date().toISOString()});}});}
         function editItem(k,q){let n=prompt(`Nova qtd:`,q);if(n!==null&&n.trim()!=="")db.ref('stock/'+k).set(parseInt(n));}
         function addItem(){const c=document.getElementById('cat-input').value;const k=c==='fralda'?document.getElementById('size-input').value:c;const q=parseInt(document.getElementById('qty-input').value)||0;if(q>0){db.ref('stock/'+k).transaction(v=>(v||0)+q);document.getElementById('qty-input').value='';}}
@@ -363,7 +332,6 @@
         function regFeed(s){db.ref('feeds').push().set({s,d:new Date().toISOString()});}
         function addDiary(){const t=document.getElementById('diary-in').value;if(t)db.ref('diary').push().set({t,d:new Date().toISOString()});}
         function addWish(){const t=document.getElementById('wish-in').value;if(t)db.ref('wishes').push().set({t});}
-        
         function setFilter(f){currentFilter=f;document.querySelectorAll('.filter-btn').forEach(b=>{b.classList.replace('filter-active','filter-inactive');if(b.id==='filter-'+f)b.classList.replace('filter-inactive','filter-active')});db.ref().once('value',s=>renderEstoque(s.val().stock||{},s.val().usageLogs||{}));}
         function toggleSizeInput(){document.getElementById('size-wrapper').classList.toggle('hidden',document.getElementById('cat-input').value!=='fralda');}
         function toggleAvoMode(){document.body.classList.toggle('text-xl');}
